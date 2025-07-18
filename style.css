@@ -1,29 +1,95 @@
-const form = document.getElementById("note-form");
-const input = document.getElementById("note-input");
-const grid = document.getElementById("notes-grid");
-const colorSelect = document.getElementById("color-select");
+/* Base styles */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f3f5;
+}
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+header {
+  background: #9D4EDD;
+  color: white;
+  padding: 16px 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
 
-  const text = input.value.trim();
-  const color = colorSelect.value;
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
 
-  if (text === "") return;
+main {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
 
-  const note = document.createElement("div");
-  note.className = "note";
-  note.style.backgroundColor = color;
+/* Form */
+#note-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
 
-  note.innerHTML = `
-    <button class="delete">&times;</button>
-    <p>${text}</p>
-  `;
+#note-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #9D4EDD;
+  border-radius: 8px;
+  resize: vertical;
+}
 
-  note.querySelector(".delete").addEventListener("click", () => {
-    grid.removeChild(note);
-  });
+#color-select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
 
-  grid.prepend(note);
-  input.value = "";
-});
+button[type="submit"] {
+  padding: 10px 16px;
+  background-color: #9D4EDD;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background: #7B2CBF;
+}
+
+/* Notes Grid */
+#notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* Individual Note */
+.note {
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.note .delete {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.note .delete:hover {
+  color: red;
+}
