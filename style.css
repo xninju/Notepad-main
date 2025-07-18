@@ -1,6 +1,6 @@
 body {
-  background: #18181b;
-  color: #e0e0e0;
+  background: #0f0f1a;
+  color: #e6e0f8;
   font-family: 'Segoe UI', sans-serif;
   min-height: 100vh;
   margin: 0;
@@ -9,74 +9,97 @@ body {
 
 .container {
   max-width: 600px;
-  margin: 50px auto;
-  background: #23232a;
-  border-radius: 16px;
-  box-shadow: 0 0 32px #39ff14, 0 0 2px #fff;
-  padding: 32px;
+  margin: 60px auto;
+  background: #1a1a2e;
+  border-radius: 20px;
+  box-shadow: 0 0 40px #9D4EDD, 0 0 4px #fff;
+  padding: 36px;
+  animation: glowPulse 3s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 40px #9D4EDD, 0 0 4px #fff;
+  }
+  50% {
+    box-shadow: 0 0 60px #7B2CBF, 0 0 6px #fff;
+  }
 }
 
 h1 {
   text-align: center;
-  color: #39ff14;
-  text-shadow: 0 0 10px #39ff14;
-  font-size: 2.5em;
+  color: #C77DFF;
+  text-shadow: 0 0 15px #C77DFF;
+  font-size: 2.6em;
+  margin-bottom: 20px;
 }
 
 #note-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 #note-input {
-  background: #282834;
-  color: #39ff14;
+  background: #2a2a40;
+  color: #D0A2F7;
   border: none;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 18px;
   font-size: 1em;
   resize: vertical;
   outline: none;
-  box-shadow: 0 0 10px #39ff1450;
+  box-shadow: 0 0 15px #9D4EDD90;
+  transition: box-shadow 0.3s;
+}
+
+#note-input:focus {
+  box-shadow: 0 0 25px #C77DFF;
 }
 
 button[type="submit"] {
-  background: #39ff14;
-  color: #23232a;
+  background: #C77DFF;
+  color: #1a1a2e;
   border: none;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 14px;
   font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 0 10px #39ff14;
-  transition: background 0.2s;
+  box-shadow: 0 0 12px #C77DFF;
+  transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background: #23232a;
-  color: #39ff14;
-  border: 2px solid #39ff14;
+  background: #1a1a2e;
+  color: #C77DFF;
+  border: 2px solid #C77DFF;
+  box-shadow: 0 0 18px #C77DFF;
 }
 
 #notes-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .note {
-  background: #18181b;
-  color: #e0e0e0;
-  border-left: 6px solid #39ff14;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 0 8px #39ff1440;
+  background: #12121d;
+  color: #f0e6ff;
+  border-left: 5px solid #C77DFF;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px #C77DFF55;
   font-size: 1.1em;
   position: relative;
   word-break: break-word;
+  transition: transform 0.2s;
+}
+
+.note:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px #C77DFFAA;
 }
 
 .note .delete-btn {
@@ -84,15 +107,15 @@ button[type="submit"]:hover {
   top: 8px;
   right: 8px;
   background: transparent;
-  color: #ff3864;
+  color: #ff4c8b;
   border: none;
   font-size: 1.2em;
   cursor: pointer;
   padding: 0;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .note .delete-btn:hover {
   color: #fff;
-  text-shadow: 0 0 8px #ff3864;
+  text-shadow: 0 0 8px #ff4c8b;
 }
