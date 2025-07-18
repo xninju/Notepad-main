@@ -1,121 +1,29 @@
-body {
-  background: #0f0f1a;
-  color: #e6e0f8;
-  font-family: 'Segoe UI', sans-serif;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
+const form = document.getElementById("note-form");
+const input = document.getElementById("note-input");
+const grid = document.getElementById("notes-grid");
+const colorSelect = document.getElementById("color-select");
 
-.container {
-  max-width: 600px;
-  margin: 60px auto;
-  background: #1a1a2e;
-  border-radius: 20px;
-  box-shadow: 0 0 40px #9D4EDD, 0 0 4px #fff;
-  padding: 36px;
-  animation: glowPulse 3s infinite ease-in-out;
-}
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 40px #9D4EDD, 0 0 4px #fff;
-  }
-  50% {
-    box-shadow: 0 0 60px #7B2CBF, 0 0 6px #fff;
-  }
-}
+  const text = input.value.trim();
+  const color = colorSelect.value;
 
-h1 {
-  text-align: center;
-  color: #C77DFF;
-  text-shadow: 0 0 15px #C77DFF;
-  font-size: 2.6em;
-  margin-bottom: 20px;
-}
+  if (text === "") return;
 
-#note-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 28px;
-}
+  const note = document.createElement("div");
+  note.className = "note";
+  note.style.backgroundColor = color;
 
-#note-input {
-  background: #2a2a40;
-  color: #D0A2F7;
-  border: none;
-  border-radius: 10px;
-  padding: 18px;
-  font-size: 1em;
-  resize: vertical;
-  outline: none;
-  box-shadow: 0 0 15px #9D4EDD90;
-  transition: box-shadow 0.3s;
-}
+  note.innerHTML = `
+    <button class="delete">&times;</button>
+    <p>${text}</p>
+  `;
 
-#note-input:focus {
-  box-shadow: 0 0 25px #C77DFF;
-}
+  note.querySelector(".delete").addEventListener("click", () => {
+    grid.removeChild(note);
+  });
 
-button[type="submit"] {
-  background: #C77DFF;
-  color: #1a1a2e;
-  border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 1.1em;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 12px #C77DFF;
-  transition: all 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  background: #1a1a2e;
-  color: #C77DFF;
-  border: 2px solid #C77DFF;
-  box-shadow: 0 0 18px #C77DFF;
-}
-
-#notes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.note {
-  background: #12121d;
-  color: #f0e6ff;
-  border-left: 5px solid #C77DFF;
-  padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 0 12px #C77DFF55;
-  font-size: 1.1em;
-  position: relative;
-  word-break: break-word;
-  transition: transform 0.2s;
-}
-
-.note:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 20px #C77DFFAA;
-}
-
-.note .delete-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: transparent;
-  color: #ff4c8b;
-  border: none;
-  font-size: 1.2em;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.2s ease;
-}
-
-.note .delete-btn:hover {
-  color: #fff;
-  text-shadow: 0 0 8px #ff4c8b;
-}
+  grid.prepend(note);
+  input.value = "";
+});
