@@ -2,31 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neon Keep</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Neon Notes</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header>
-    <h1>🟣 Neon Keep</h1>
-  </header>
-
-  <main>
+  <div class="container">
+    <h1>📝 Neon Notes</h1>
     <form id="note-form">
-      <textarea id="note-input" placeholder="Take a note..." rows="2"></textarea>
-      <select id="color-select">
-        <option value="#fffacd">Yellow</option>
-        <option value="#c8e6c9">Green</option>
-        <option value="#ffccbc">Coral</option>
-        <option value="#bbdefb">Blue</option>
-        <option value="#f8bbd0">Pink</option>
-      </select>
-      <button type="submit">Add</button>
+      <textarea id="note-input" placeholder="Write your note here..." rows="3"></textarea>
+      <button type="submit">Add Note</button>
     </form>
-
-    <section id="notes-grid"></section>
-  </main>
-
+    <div id="notes-list"></div>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>
