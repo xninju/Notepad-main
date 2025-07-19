@@ -6,7 +6,7 @@ const multer = require('multer');
 const { Pool } = require('pg');
 
 // Neon DB connection string
-const NEON_DB_URL = process.env.DATABASE_URL || 'your_neon_db_connection_string';
+const NEON_DB_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_7vmHVs2FXubz@ep-yellow-lake-adm5qml0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 
 const pool = new Pool({
   connectionString: NEON_DB_URL,
