@@ -15,7 +15,7 @@ app.use(express.static("public"));
 app.use(express.json());
 
 const pool = new pg.Pool({
-  connectionString: "postgresql://neondb_owner:npg_7vmHVs2FXubz@ep-yellow-lake-adm5qml0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+  connectionString: "postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
 });
 
 const storage = multer.memoryStorage();
