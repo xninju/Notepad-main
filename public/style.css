@@ -176,6 +176,7 @@ body {
 }
 
   .note-card {
+  background-color: inherit; /* use JS-assigned color */
   position: relative; /* Required for absolute children */
   padding-bottom: 30px; /* Add space for timestamp */
 }
