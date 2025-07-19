@@ -344,18 +344,21 @@ body {
   position: fixed;
   z-index: 9999;
   inset: 0;
-  background: #000000e0;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6); /* fallback for older browsers */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .auth-box {
-  background: #111;
+  background: rgba(17, 17, 17, 0.9);
   padding: 2rem;
   border-radius: 1rem;
   text-align: center;
   box-shadow: 0 0 20px #9d4edd88;
+  max-width: 300px;
+  width: 100%;
 }
 
 .auth-box h2 {
@@ -372,15 +375,30 @@ body {
   background: #222;
   color: #fff;
   font-size: 1rem;
+  width: 100%;
   margin-bottom: 1rem;
 }
 
 .auth-box button {
-  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  width: 100%;
   border: 1px solid #ff5e5e;
   background: #ff5e5e;
   color: white;
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.3s;
+}
+
+.auth-box button:hover {
+  background: #ff3d3d;
+  border-color: #ff3d3d;
+}
+
+#auth-error {
+  margin-top: 0.5rem;
+  color: red;
+  display: none;
 }
