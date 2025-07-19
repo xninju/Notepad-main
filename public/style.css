@@ -156,7 +156,6 @@ body {
 .note-card a:hover {
   background-color: #3a3a3a;
   box-shadow: 0 0 10px #70e4ff;
-  text-decoration: underline;
   color: #a0f0ff;
 }
 
@@ -233,8 +232,12 @@ body {
 }
 
 .note-card .timestamp {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
   font-size: 0.75rem;
   color: #888;
+  text-align: right;
 }
 
 .note-card button {
