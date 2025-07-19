@@ -152,6 +152,12 @@ body {
   transition: transform 0.3s ease;
 }
 
+/* Highlight pinned notes */
+.note-card.pinned {
+  border: 2px solid #ffc107;
+}
+
+
 .note-card h3 {
   color: #9D4EDD;
   margin-bottom: 10px;
