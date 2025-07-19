@@ -25,17 +25,21 @@ app.post('/api/notes', upload.fields([{ name: 'image' }, { name: 'file' }]), asy
   const file = req.files['file']?.[0]?.buffer.toString('base64') || null;
   const created_at = new Date().toISOString();
 
+  console.log("Incoming Note Data:", { title, content, hasImage: !!image, hasFile: !!file });
+
   try {
     const result = await pool.query(
       'INSERT INTO notes (title, content, image, file, created_at, deleted) VALUES ($1, $2, $3, $4, $5, false) RETURNING *',
       [title, content, image, file, created_at]
     );
+    console.log("Note Saved:", result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("DB Insert Error:", err.message);
     res.status(500).send('Error saving note');
   }
 });
+
 
 app.get('/api/notes', async (req, res) => {
   try {
