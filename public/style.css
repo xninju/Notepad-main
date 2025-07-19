@@ -1,48 +1,53 @@
-/* public/style.css */
-
+/* Reset and Base Styles */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #0d0d0d;
-  color: #f0f0f0;
-  font-family: "Segoe UI", sans-serif;
-  line-height: 1.6;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0e0e0e;
+  color: #f1f1f1;
+  min-height: 100vh;
   padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
+/* Container */
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-h1 {
+/* Header */
+.container h1 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
   color: #9d4edd;
 }
 
+/* Form */
 form {
-  background-color: #1a1a1a;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 input[type="text"],
 textarea {
+  background: #111;
+  border: 1px solid #444;
+  color: #f1f1f1;
   padding: 0.75rem;
-  background-color: #0d0d0d;
-  border: 1px solid #333;
-  border-radius: 8px;
-  color: #fff;
+  border-radius: 6px;
   font-size: 1rem;
   resize: vertical;
 }
@@ -52,67 +57,100 @@ textarea {
 }
 
 .upload-btn {
+  background: #2a2a2a;
+  color: #f1f1f1;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #262626;
-  color: #ccc;
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
   border: 1px solid #333;
-  transition: background 0.2s ease;
+  transition: background 0.2s;
 }
 
 .upload-btn:hover {
-  background-color: #333;
+  background: #333;
 }
 
+.upload-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Submit Button */
 button[type="submit"] {
-  background-color: #9d4edd;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  background: #9d4edd;
+  color: white;
   border: none;
-  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.3s;
 }
 
 button[type="submit"]:hover {
-  background-color: #7b2cbf;
+  background: #7b31cc;
 }
 
+/* Notes List */
 #notesContainer {
   margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
 }
 
+/* Individual Note */
 .note-card {
-  background-color: #1a1a1a;
-  padding: 1rem;
-  border-radius: 10px;
+  background: #141414;
   border: 1px solid #333;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: 0.3s;
+  position: relative;
 }
 
 .note-card:hover {
-  transform: translateY(-5px);
+  border-color: #9d4edd;
 }
 
 .note-card h3 {
-  font-size: 1.1rem;
-  color: #f0f0f0;
   margin-bottom: 0.5rem;
+  color: #f1f1f1;
+  font-size: 1.2rem;
 }
 
 .note-card p {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #ccc;
+}
+
+.note-card .timestamp {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+.note-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.note-actions button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.note-actions button:hover {
+  color: #f1f1f1;
 }
 
 /* Modal */
@@ -122,7 +160,7 @@ button[type="submit"]:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -134,43 +172,40 @@ button[type="submit"]:hover {
 }
 
 .modal-content {
-  background-color: #1a1a1a;
+  background: #1f1f1f;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 10px;
   max-width: 600px;
   width: 90%;
+  color: #fff;
   position: relative;
-  border: 1px solid #333;
 }
 
 .close-btn {
   position: absolute;
-  top: 0.75rem;
+  top: 0.8rem;
   right: 1rem;
   font-size: 1.5rem;
-  color: #999;
+  color: #aaa;
   cursor: pointer;
 }
 
 .close-btn:hover {
-  color: #fff;
+  color: white;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
-  form {
+@media screen and (max-width: 600px) {
+  .container {
     padding: 1rem;
   }
 
   .upload-btn {
     font-size: 0.85rem;
+    padding: 0.5rem;
   }
 
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  .modal-content {
-    padding: 1.2rem;
+  button[type="submit"] {
+    font-size: 0.95rem;
   }
 }
