@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('noteForm');
   const notesContainer = document.getElementById('notes');
 
-  // Handle form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -25,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Load notes from backend
   async function loadNotes() {
     notesContainer.innerHTML = '';
     try {
@@ -41,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         card.innerHTML = `
           <h3 contenteditable="true" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
           <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
-          ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image">` : ''}
-          ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file">📎 Download File</a>` : ''}
+          ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image" class="note-img">` : ''}
+          ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file.docx">📎 Download File</a>` : ''}
           <p class="timestamp">${date}</p>
           <button onclick="deleteNote(${note.id})">🗑️ Delete</button>
         `;
@@ -57,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadNotes();
 });
 
-// Update note (on blur of editable title/content)
 async function updateNote(id, title, content) {
   try {
     const res = await fetch(`/api/notes/${id}`, {
@@ -71,7 +68,6 @@ async function updateNote(id, title, content) {
   }
 }
 
-// Soft delete note
 async function deleteNote(id) {
   try {
     const res = await fetch(`/api/notes/${id}`, {
