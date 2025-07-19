@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>ZapNote</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%231a1a1a" stroke="%239D4EDD" stroke-width="4"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="48" font-weight="bold" fill="%239D4EDD">Z</text></svg>'>
 </head>
 <body>
@@ -13,10 +13,12 @@
       <input type="text" name="title" placeholder="Note Title" required />
       <textarea name="content" placeholder="Your note..." required></textarea>
       <label class="upload-btn">
-        📷 Upload Image <input type="file" name="image" accept="image/*" hidden />
+        <svg width="80px" height="auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293A1 1 0 0 1 9 4h6a1 1 0 0 1 .707.293L17.414 6H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2.586l1.707-1.707zM9.414 6L7.707 7.707A1 1 0 0 1 7 8H4v10h16V8h-3a1 1 0 0 1-.707-.293L14.586 6H9.414zM12 10.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-4 2a4 4 0 1 1 8 0 4 4 0 0 1-8 0z" fill="#0D0D0D"/></svg> Upload Image <input type="file" name="image" accept="image/*" hidden />
       </label>
       <label class="upload-btn">
-        📄 Upload File <input type="file" name="file" accept=".pdf,.doc,.docx" hidden />
+        <svg width="80px" height="auto" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#000000" fill-rule="evenodd" d="M1,12 L1,4 C1,2.89543 1.89543,2 3,2 L6.58579,2 C6.851,2 7.10536,2.10536 7.29289,2.29289 L9,4 L13,4 C14.1046,4 15,4.89543 15,6 L15,12 C15,13.1046 14.1046,14 13,14 L3,14 C1.89543,14 1,13.1046 1,12 Z M13,6 L3,6 L3,8 L13,8 L13,6 Z"/>
+</svg> Upload File <input type="file" name="file" accept=".pdf,.doc,.docx" hidden />
       </label>
       <button type="submit">Add Note</button>
     </form>
