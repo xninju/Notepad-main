@@ -24,9 +24,9 @@ const createTable = `
 CREATE TABLE IF NOT EXISTS notes (
   id SERIAL PRIMARY KEY,
   content TEXT NOT NULL,
+  image TEXT,
   created_at TIMESTAMP DEFAULT NOW()
-)
-`;
+)`;
 pool.query(createTable);
 
 app.get('/api/notes', async (req, res) => {
