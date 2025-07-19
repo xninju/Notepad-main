@@ -42,7 +42,7 @@ async function fetchNotes() {
   restoreBtn.title = 'Restore';
   restoreBtn.onclick = async () => {
     await fetch(`/restore-note/${note.id}`, { method: 'PUT' });
-    loadNotes(); // re-render notes
+    fetchNotes(); // re-render notes
   };
 
   const deleteForeverBtn = document.createElement('button');
@@ -50,7 +50,7 @@ async function fetchNotes() {
   deleteForeverBtn.title = 'Delete Forever';
   deleteForeverBtn.onclick = async () => {
     await fetch(`/permanently-delete/${note.id}`, { method: 'DELETE' });
-    loadNotes(); // re-render notes
+    fetchNotes(); // re-render notes
   };
 
   card.appendChild(restoreBtn);
