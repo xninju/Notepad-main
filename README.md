@@ -38,11 +38,19 @@ Hosted on: [Render](https://notepad-main.onrender.com)
 
 ZapNote/
 
+ZapNote/
+
 ├── public/ 
+
 │   ├── index.html
+
 │   ├── style.css
+
 │   └── app.js
+
 ├── server.js
+
 ├── package.json
+
 └── README.md
 
