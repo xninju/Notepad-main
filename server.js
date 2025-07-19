@@ -1,11 +1,12 @@
-// Express server for Neon Notes backend
+// Express server for ZapNote backend
 
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
 const { Pool } = require('pg');
 
-// Neon DB connection string from environment or hardcoded for local testing
-const NEON_DB_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_7vmHVs2FXubz@ep-yellow-lake-adm5qml0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+// Neon DB connection string
+const NEON_DB_URL = process.env.DATABASE_URL || 'your_neon_db_connection_string';
 
 const pool = new Pool({
   connectionString: NEON_DB_URL,
@@ -16,10 +17,13 @@ const pool = new Pool({
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname)); // Serves index.html, style.css, etc.
+app.use(express.static(__dirname)); // Serves index.html, style.css, app.js, etc.
 
-// Create table if not exists
+// Multer setup for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Create table if it doesn't exist
 const createTable = `
 CREATE TABLE IF NOT EXISTS notes (
   id SERIAL PRIMARY KEY,
@@ -29,6 +33,7 @@ CREATE TABLE IF NOT EXISTS notes (
 )`;
 pool.query(createTable);
 
+// GET all notes
 app.get('/api/notes', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM notes ORDER BY created_at DESC');
@@ -38,20 +43,32 @@ app.get('/api/notes', async (req, res) => {
   }
 });
 
-app.post('/api/notes', async (req, res) => {
+// POST a new note with optional image
+app.post('/api/notes', upload.single('image'), async (req, res) => {
   try {
     const { content } = req.body;
-    if (!content || typeof content !== 'string') return res.status(400).json({ error: 'Note required' });
+    if (!content || typeof content !== 'string') {
+      return res.status(400).json({ error: 'Note content required' });
+    }
+
+    let base64Image = null;
+    if (req.file) {
+      base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    }
+
     const { rows } = await pool.query(
-      'INSERT INTO notes (content) VALUES ($1) RETURNING *',
-      [content]
+      'INSERT INTO notes (content, image) VALUES ($1, $2) RETURNING *',
+      [content, base64Image]
     );
+
     res.status(201).json(rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to add note' });
   }
 });
 
+// DELETE a note
 app.delete('/api/notes/:id', async (req, res) => {
   try {
     await pool.query('DELETE FROM notes WHERE id = $1', [req.params.id]);
@@ -61,5 +78,6 @@ app.delete('/api/notes/:id', async (req, res) => {
   }
 });
 
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Neon Notes backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`ZapNote backend running on port ${PORT}`));
