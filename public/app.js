@@ -36,6 +36,27 @@ async function fetchNotes() {
       <p class="timestamp">${date}</p>
     `;
 
+    if (note.deleted) {
+  const restoreBtn = document.createElement('button');
+  restoreBtn.innerHTML = '🔁';
+  restoreBtn.title = 'Restore';
+  restoreBtn.onclick = async () => {
+    await fetch(`/restore-note/${note.id}`, { method: 'PUT' });
+    loadNotes(); // re-render notes
+  };
+
+  const deleteForeverBtn = document.createElement('button');
+  deleteForeverBtn.innerHTML = '🗑️';
+  deleteForeverBtn.title = 'Delete Forever';
+  deleteForeverBtn.onclick = async () => {
+    await fetch(`/permanently-delete/${note.id}`, { method: 'DELETE' });
+    loadNotes(); // re-render notes
+  };
+
+  card.appendChild(restoreBtn);
+  card.appendChild(deleteForeverBtn);
+}
+
     const pinBtn = document.createElement('button');
     pinBtn.className = 'pin-btn';
     pinBtn.innerHTML = note.pinned
