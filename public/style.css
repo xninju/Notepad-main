@@ -15,8 +15,25 @@ body {
 
 /* Header */
 .header {
-  text-align: center;
-  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #111;
+  border-bottom: 1px solid #333;
+}
+
+.logo svg {
+  width: 30px;
+  height: 30px;
+  fill: #9d4edd;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  margin-left: auto;
 }
 
 .header h1 {
