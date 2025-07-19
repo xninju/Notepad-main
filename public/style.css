@@ -13,27 +13,40 @@ body {
   padding: 20px;
 }
 
-/* Header */
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 12px 20px;
-  background-color: #111;
-  border-bottom: 1px solid #333;
+  padding: 16px;
+  position: relative;
 }
 
-.logo svg {
-  width: 30px;
-  height: 30px;
+.header .logo {
+  position: absolute;
+  left: 20px;
+}
+
+.header .logo svg {
+  width: 32px;
+  height: 32px;
   fill: #9d4edd;
 }
 
-.title {
-  font-size: 1.5rem;
+.header .title {
+  font-size: 2rem;
   font-weight: bold;
   color: #fff;
-  margin-left: auto;
+}
+
+@media (max-width: 600px) {
+  .header {
+    justify-content: space-between;
+  }
+
+  .header .title {
+    font-size: 1.2rem;
+    margin-left: auto;
+  }
 }
 
 .header h1 {
