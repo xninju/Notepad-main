@@ -199,3 +199,75 @@ body {
   font-size: 1.2rem;
   cursor: pointer;
 }
+
+
+@media screen and (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .note-entry {
+    padding: 15px;
+  }
+
+  .note-entry input,
+  .note-entry textarea {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .upload-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .submit-btn {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  #notes {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+  }
+
+  .note-card {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .note-card h3 {
+    font-size: 1rem;
+  }
+
+  .note-card p {
+    font-size: 0.9rem;
+  }
+
+  .note-card a {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  .note-card button {
+    font-size: 1rem;
+    top: 8px;
+    right: 8px;
+  }
+
+  .note-card .timestamp {
+    font-size: 0.65rem;
+    bottom: 8px;
+    right: 8px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  #notes {
+    grid-template-columns: 1fr;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+}
