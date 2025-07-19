@@ -98,22 +98,33 @@ function togglePin(id) {
 
 fetchNotes();
 
-function getCurrentPassword() {
-  const now = new Date();
-  const hours = now.getHours(); // 24-hour format
-  const minutes = now.getMinutes();
-  return `${hours}${minutes.toString().padStart(2, '0')}`; // e.g. "1910"
-}
+window.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.createElement("div");
+  overlay.id = "auth-overlay";
+  overlay.innerHTML = `
+    <div class="auth-box">
+      <h2>Enter Password</h2>
+      <input type="password" id="auth-input" maxlength="4" />
+      <button id="auth-submit">Unlock</button>
+      <p id="auth-error" style="color:red; display:none;">Wrong password</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
 
-function promptForPassword() {
-  const correctPassword = getCurrentPassword();
-  const userInput = prompt("Enter current password (hour+minute):");
+  document.body.style.overflow = "hidden";
 
-  if (userInput !== correctPassword) {
-    alert("❌ Incorrect password. Access denied.");
-    document.body.innerHTML = "<h2 style='color:red; text-align:center;'>Access Denied</h2>";
-    throw new Error("Access denied.");
-  }
-}
+  document.getElementById("auth-submit").onclick = () => {
+    const userInput = document.getElementById("auth-input").value;
+    const now = new Date();
+    const hours = now.getHours(); // 24-hr
+    const minutes = now.getMinutes();
+    const password = `${hours}${minutes.toString().padStart(2, '0')}`;
 
-promptForPassword();
+    if (userInput === password) {
+      overlay.remove();
+      document.body.style.overflow = "auto";
+    } else {
+      document.getElementById("auth-error").style.display = "block";
+    }
+  };
+});
