@@ -56,6 +56,31 @@ app.put('/update-note/:id', async (req, res) => {
   }
 });
 
+app.put('/restore-note/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query(
+      'UPDATE notes SET deleted = false, deleted_at = NULL WHERE id = $1',
+      [id]
+    );
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error restoring note:', error);
+    res.status(500).json({ error: 'Failed to restore note' });
+  }
+});
+
+app.delete('/permanently-delete/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM notes WHERE id = $1', [id]);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error permanently deleting note:', error);
+    res.status(500).json({ error: 'Failed to permanently delete note' });
+  }
+});
+
 app.delete('/delete-note/:id', async (req, res) => {
   const { id } = req.params;
   try {
