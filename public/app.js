@@ -128,3 +128,39 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 });
+
+// Disable right-click
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+});
+
+// Block common devtools shortcuts
+document.addEventListener('keydown', (e) => {
+  if (
+    e.key === 'F12' ||
+    (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
+    (e.ctrlKey && e.key === 'U')
+  ) {
+    e.preventDefault();
+    alert("This action is disabled.");
+  }
+});
+
+// Fake anti-debugging loop (harder to inspect)
+setInterval(function () {
+  const element = new Image();
+  Object.defineProperty(element, 'id', {
+    get: function () {
+      throw new Error("DevTools is not allowed!");
+    }
+  });
+  console.log(element);
+}, 1000);
+
+// Disable Ctrl+S or Cmd+S (Save Page)
+document.addEventListener('keydown', function (e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    alert("Save is disabled on this page.");
+  }
+});
