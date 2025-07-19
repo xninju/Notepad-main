@@ -65,4 +65,15 @@ app.delete('/api/notes/:id', async (req, res) => {
   }
 });
 
+app.get("/test-db", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ status: "Connected", time: result.rows[0] });
+  } catch (err) {
+    console.error("DB Error:", err.message);
+    res.status(500).json({ error: "DB connection failed" });
+  }
+});
+
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
