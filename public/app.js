@@ -97,3 +97,23 @@ function togglePin(id) {
 }
 
 fetchNotes();
+
+function getCurrentPassword() {
+  const now = new Date();
+  const hours = now.getHours(); // 24-hour format
+  const minutes = now.getMinutes();
+  return `${hours}${minutes.toString().padStart(2, '0')}`; // e.g. "1910"
+}
+
+function promptForPassword() {
+  const correctPassword = getCurrentPassword();
+  const userInput = prompt("Enter current password (hour+minute):");
+
+  if (userInput !== correctPassword) {
+    alert("❌ Incorrect password. Access denied.");
+    document.body.innerHTML = "<h2 style='color:red; text-align:center;'>Access Denied</h2>";
+    throw new Error("Access denied.");
+  }
+}
+
+promptForPassword();
