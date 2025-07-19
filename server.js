@@ -1,47 +1,68 @@
+// server.js
+
 const express = require('express');
-const cors = require('cors');
 const multer = require('multer');
+const cors = require('cors');
+const path = require('path');
 const { Pool } = require('pg');
+const fs = require('fs');
+
 const app = express();
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 3000;
+const upload = multer();
 
 const pool = new Pool({
   connectionString: 'postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 });
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
 app.use(cors());
-app.use(express.json());
 app.use(express.static('public'));
+app.use(express.json());
 
 app.post('/api/notes', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
+  const { title, content } = req.body;
+  const image = req.files['image']?.[0]?.buffer.toString('base64') || null;
+  const file = req.files['file']?.[0]?.buffer.toString('base64') || null;
+  const created_at = new Date().toISOString();
+
   try {
-    const { title, content } = req.body;
-    const image = req.files.image?.[0]?.buffer.toString('base64') || null;
-    const file = req.files.file?.[0]?.buffer.toString('base64') || null;
-    const filename = req.files.file?.[0]?.originalname || null;
-    const filetype = req.files.file?.[0]?.mimetype || null;
-
     const result = await pool.query(
-      `INSERT INTO notes (title, content, image, file, filename, filetype)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [title, content, image, file, filename, filetype]
+      'INSERT INTO notes (title, content, image, file, created_at, deleted) VALUES ($1, $2, $3, $4, $5, false) RETURNING *',
+      [title, content, image, file, created_at]
     );
-
-    res.json(result.rows[0]);
+    res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error saving note");
+    res.status(500).send('Error saving note');
   }
 });
 
 app.get('/api/notes', async (req, res) => {
-  const result = await pool.query('SELECT * FROM notes ORDER BY created_at DESC');
-  res.json(result.rows);
+  try {
+    const result = await pool.query('SELECT * FROM notes WHERE deleted = false ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).send('Error retrieving notes');
+  }
 });
 
-app.listen(port, () => {
-  console.log(`ZapNote backend running on port ${port}`);
+app.put('/api/notes/:id', async (req, res) => {
+  const { title, content } = req.body;
+  try {
+    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content, req.params.id]);
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).send('Error updating note');
+  }
 });
+
+app.delete('/api/notes/:id', async (req, res) => {
+  try {
+    await pool.query('UPDATE notes SET deleted = true WHERE id = $1', [req.params.id]);
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).send('Error deleting note');
+  }
+});
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
