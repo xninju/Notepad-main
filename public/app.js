@@ -1,105 +1,110 @@
-const form = document.getElementById('noteForm');
-const notesContainer = document.getElementById('notes');
-const deletedSection = document.getElementById('deletedNotes');
-
-form.addEventListener('submit', async (e) => {
+document.getElementById('noteForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const form = e.target;
   const formData = new FormData(form);
-  await fetch('/add', {
-    method: 'POST',
-    body: formData,
-  });
-  form.reset();
-  fetchNotes();
+
+  try {
+    await fetch('/add-note', {
+      method: 'POST',
+      body: formData,
+    });
+    form.reset();
+    fetchNotes();
+  } catch (err) {
+    console.error('Error saving note:', err);
+  }
 });
 
 async function fetchNotes() {
-  const res = await fetch('/notes');
+  const res = await fetch('/get-notes');
   const notes = await res.json();
+  const container = document.getElementById('notes');
+  container.innerHTML = '';
 
-  notesContainer.innerHTML = '';
-  deletedSection.innerHTML = '';
+  notes.forEach((note) => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    card.style.backgroundColor = note.color || '#1a1a1a';
 
-  const pinnedNotes = notes.filter(n => !n.deleted && n.pinned);
-  const unpinnedNotes = notes.filter(n => !n.deleted && !n.pinned);
-  const deletedNotes = notes.filter(n => n.deleted);
-
-  [...pinnedNotes, ...unpinnedNotes].forEach(renderNote);
-  deletedNotes.forEach(renderNote);
+    if (note.pinned) {
+  card.classList.add('pinned');
 }
 
-function renderNote(note) {
-  const card = document.createElement('div');
-  card.className = 'note-card';
-  if (note.pinned) card.classList.add('pinned');
-  card.style.backgroundColor = note.color || '#1a1a1a';
+    const date = new Date(note.created_at).toLocaleString();
 
-  const date = new Date(note.created_at).toLocaleString();
+    card.innerHTML = `
+      <h3 contenteditable="true" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
+      <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
+      ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image" class="note-img">` : ''}
+      ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file.docx">Download File</a>` : ''}
+      <p class="timestamp">${date}</p>
+    `;
 
-  card.innerHTML = `
-    <h3 contenteditable="true" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
-    <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
-    ${note.image ? `<img src="data:image/png;base64,${note.image}" class="note-img" />` : ''}
-    ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file">📎 Download File</a>` : ''}
-    <p class="timestamp">${date}</p>
-  `;
-
-  // ✅ Pin/Unpin button using YOUR SVGs
-  const pinBtn = document.createElement('button');
-  pinBtn.innerHTML = note.pinned
-    ? `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffc107" width="20px" height="20px" viewBox="0 0 24 24"><path d="M17.293 5.293 13 9.586V14h-2V9.586L6.707 5.293 5.293 6.707 10 11.414V22h4V11.414l4.707-4.707z"/></svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" width="20px" height="20px" viewBox="0 0 24 24"><path d="M17.293 5.293 13 9.586V14h-2V9.586L6.707 5.293 5.293 6.707 10 11.414V22h4V11.414l4.707-4.707z"/></svg>`;
-  pinBtn.title = note.pinned ? 'Unpin' : 'Pin';
-  pinBtn.onclick = async () => {
-    await fetch(`/pin-note/${note.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pinned: !note.pinned }),
-    });
-    fetchNotes();
+    if (note.deleted) {
+  const restoreBtn = document.createElement('button');
+  restoreBtn.innerHTML = '🔁';
+  restoreBtn.title = 'Restore';
+  restoreBtn.onclick = async () => {
+    await fetch(`/restore-note/${note.id}`, { method: 'PUT' });
+    fetchNotes(); // re-render notes
   };
-  card.appendChild(pinBtn);
 
-  // 🗑️ Soft delete / Bin
-  if (!note.deleted) {
-    const delBtn = document.createElement('button');
-    delBtn.innerHTML = '🗑️';
-    delBtn.title = 'Move to Bin';
-    delBtn.onclick = async () => {
-      await fetch(`/delete/${note.id}`, { method: 'DELETE' });
-      fetchNotes();
-    };
-    card.appendChild(delBtn);
-    notesContainer.appendChild(card);
-  } else {
-    // 🔁 Restore
-    const restoreBtn = document.createElement('button');
-    restoreBtn.innerHTML = '🔁';
-    restoreBtn.title = 'Restore';
-    restoreBtn.onclick = async () => {
-      await fetch(`/restore-note/${note.id}`, { method: 'PUT' });
-      fetchNotes();
-    };
-    // ❌ Delete Forever
-    const deleteForeverBtn = document.createElement('button');
-    deleteForeverBtn.innerHTML = '🗑️';
-    deleteForeverBtn.title = 'Delete Forever';
-    deleteForeverBtn.onclick = async () => {
-      await fetch(`/permanently-delete/${note.id}`, { method: 'DELETE' });
-      fetchNotes();
-    };
-    card.appendChild(restoreBtn);
-    card.appendChild(deleteForeverBtn);
-    deletedSection.appendChild(card);
-  }
+  const deleteForeverBtn = document.createElement('button');
+  deleteForeverBtn.innerHTML = '🗑️';
+  deleteForeverBtn.title = 'Delete Forever';
+  deleteForeverBtn.onclick = async () => {
+    await fetch(`/permanently-delete/${note.id}`, { method: 'DELETE' });
+    fetchNotes(); // re-render notes
+  };
+
+  card.appendChild(restoreBtn);
+  card.appendChild(deleteForeverBtn);
 }
 
-async function updateNote(id, title, content) {
-  await fetch(`/update/${id}`, {
+    const pinBtn = document.createElement('button');
+pinBtn.innerHTML = note.pinned ? '<svg fill="#bbb" width="20px" height="auto" viewBox="-2.5 -2.5 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" class="jam jam-pin"><path d='M12.626 11.346l-.184-1.036 4.49-4.491-2.851-2.852-4.492 4.49-1.035-.184a5.05 5.05 0 0 0-2.734.269l6.538 6.537a5.05 5.05 0 0 0 .268-2.733zm-4.25 1.604L2.67 18.654a1.008 1.008 0 0 1-1.426-1.426l5.705-5.704L2.67 7.245a7.051 7.051 0 0 1 6.236-1.958l3.747-3.747a2.017 2.017 0 0 1 2.853 0l2.852 2.853a2.017 2.017 0 0 1 0 2.852l-3.747 3.747a7.051 7.051 0 0 1-1.958 6.236L8.376 12.95z'/></svg>' : '<svg fill="#ffc107" width="20px" height="auto" viewBox="-2.5 -2.5 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" class="jam jam-pin"><path d='M12.626 11.346l-.184-1.036 4.49-4.491-2.851-2.852-4.492 4.49-1.035-.184a5.05 5.05 0 0 0-2.734.269l6.538 6.537a5.05 5.05 0 0 0 .268-2.733zm-4.25 1.604L2.67 18.654a1.008 1.008 0 0 1-1.426-1.426l5.705-5.704L2.67 7.245a7.051 7.051 0 0 1 6.236-1.958l3.747-3.747a2.017 2.017 0 0 1 2.853 0l2.852 2.853a2.017 2.017 0 0 1 0 2.852l-3.747 3.747a7.051 7.051 0 0 1-1.958 6.236L8.376 12.95z'/></svg>';
+pinBtn.title = note.pinned ? 'Unpin' : 'Pin';
+
+pinBtn.onclick = async () => {
+  await fetch(`/pin-note/${note.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify({ pinned: !note.pinned })
   });
+  fetchNotes();
+};
+
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ff5e5e" xmlns="http://www.w3.org/2000/svg"><path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"/></svg>`;
+    deleteBtn.onclick = () => deleteNote(note.id);
+
+    card.appendChild(pinBtn);
+    card.appendChild(deleteBtn);
+    container.appendChild(card);
+  });
+}
+
+function updateNote(id, newTitle, newContent) {
+  fetch(`/update-note/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: newTitle, content: newContent }),
+  })
+    .then(() => fetchNotes())
+    .catch((err) => console.error('Update error:', err));
+}
+
+function deleteNote(id) {
+  fetch(`/delete-note/${id}`, { method: 'DELETE' })
+    .then(() => fetchNotes())
+    .catch((err) => console.error('Delete error:', err));
+}
+
+function togglePin(id) {
+  fetch(`/pin/${id}`, { method: 'PATCH' })
+    .then(() => fetchNotes())
+    .catch((err) => console.error('Pin error:', err));
 }
 
 fetchNotes();
