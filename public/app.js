@@ -26,6 +26,10 @@ async function fetchNotes() {
     card.className = 'note-card';
     card.style.backgroundColor = note.color || '#1a1a1a';
 
+    if (note.pinned) {
+  card.classList.add('pinned');
+}
+
     const date = new Date(note.created_at).toLocaleString();
 
     card.innerHTML = `
