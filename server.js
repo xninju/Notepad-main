@@ -106,15 +106,3 @@ app.patch('/pin/:id', async (req, res) => {
 app.listen(port, () => {
   console.log(`ZapNote server running on port ${port}`);
 });
-
-app.put('/pin-note/:id', async (req, res) => {
-  const { id } = req.params;
-  const { pinned } = req.body;
-  try {
-    await pool.query('UPDATE notes SET pinned = $1 WHERE id = $2', [pinned, id]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error('Pin update failed:', err);
-    res.status(500).send('Error updating pin');
-  }
-});
