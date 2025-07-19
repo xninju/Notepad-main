@@ -7,27 +7,41 @@
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%231a1a1a" stroke="%239D4EDD" stroke-width="4"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="48" font-weight="bold" fill="%239D4EDD">Z</text></svg>'>
 </head>
 <body>
-  <div class="container">
-    <h1>ZapNote</h1>
-    <form id="noteForm">
-      <input type="text" name="title" placeholder="Note Title" required />
-      <textarea name="content" placeholder="Your note..." required></textarea>
-      <label class="upload-btn">
-        📷 Upload Image <input type="file" name="image" accept="image/*" hidden />
-      </label>
-      <label class="upload-btn">
-        📄 Upload File <input type="file" name="file" accept=".pdf,.doc,.docx" hidden />
-      </label>
-      <button type="submit">Add Note</button>
-    </form>
-    <div id="notesContainer"></div>
-  </div>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">🗒 ZapNote</div>
+      <nav>
+        <ul>
+          <li class="active">Notes</li>
+          <li>Reminders</li>
+          <li>Edit labels</li>
+          <li>Archive</li>
+          <li>Bin</li>
+        </ul>
+      </nav>
+    </aside>
 
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <div id="modalDetails"></div>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Input Area -->
+      <div class="note-input-box">
+        <form id="noteForm" enctype="multipart/form-data">
+          <input type="text" id="title" name="title" placeholder="Title" required />
+          <textarea id="content" name="content" placeholder="Take a note..." required></textarea>
+          <div class="actions">
+            <input type="file" name="images" accept="image/*" multiple />
+            <input type="file" name="files" accept=".pdf,.doc,.docx" multiple />
+            <button type="submit">Add</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Notes Grid -->
+      <div id="notesGrid" class="notes-grid">
+        <!-- JavaScript will load notes here -->
+      </div>
+    </main>
   </div>
 
   <script src="app.js"></script>
