@@ -37,10 +37,18 @@ Hosted on: [Render](https://notepad-main.onrender.com)
 ## 📁 Folder Structure
 
 ZapNote/
-├── public/
+
+├── public/ 
+
 │   ├── index.html
+
 │   ├── style.css
+
 │   └── app.js
+
 ├── server.js
+
 ├── package.json
+
 └── README.md
+
