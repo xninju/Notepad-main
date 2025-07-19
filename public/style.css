@@ -272,3 +272,26 @@ body {
     font-size: 1.8rem;
   }
 }
+
+/* Pin Button */
+.pin-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Responsive Note Layout */
+#notes {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+/* Mobile View */
+@media (max-width: 600px) {
+  #notes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
