@@ -1,47 +1,74 @@
-const express = require('express');
-const cors = require('cors');
-const multer = require('multer');
-const { Pool } = require('pg');
-const app = express();
-const port = process.env.PORT || 10000;
+// server.js
 
-const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_7vmHVs2FXubz@ep-yellow-lake-adm5qml0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+const express = require("express");
+const multer = require("multer");
+const pg = require("pg");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.static("public"));
+app.use(express.json());
+
+const pool = new pg.Pool({
+  connectionString: "postgresql://neondb_owner:npg_7vmHVs2FXubz@ep-yellow-lake-adm5qml0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
 });
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+// Create table if not exists
+pool.query(`
+  CREATE TABLE IF NOT EXISTS notes (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    content TEXT,
+    image TEXT,
+    file TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 
-app.post('/api/notes', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
+// API to get all notes
+app.get("/api/notes", async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const image = req.files.image?.[0]?.buffer.toString('base64') || null;
-    const file = req.files.file?.[0]?.buffer.toString('base64') || null;
-    const filename = req.files.file?.[0]?.originalname || null;
-    const filetype = req.files.file?.[0]?.mimetype || null;
-
-    const result = await pool.query(
-      `INSERT INTO notes (title, content, image, file, filename, filetype)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [title, content, image, file, filename, filetype]
-    );
-
-    res.json(result.rows[0]);
+    const result = await pool.query("SELECT * FROM notes ORDER BY created_at DESC");
+    res.json(result.rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error saving note");
+    res.status(500).send("Database error");
   }
 });
 
-app.get('/api/notes', async (req, res) => {
-  const result = await pool.query('SELECT * FROM notes ORDER BY created_at DESC');
-  res.json(result.rows);
+// API to add a new note
+app.post("/api/notes", upload.fields([{ name: "image" }, { name: "file" }]), async (req, res) => {
+  const { title, content } = req.body;
+
+  let imageData = null;
+  let fileData = null;
+
+  if (req.files.image && req.files.image[0]) {
+    imageData = `data:${req.files.image[0].mimetype};base64,${req.files.image[0].buffer.toString("base64")}`;
+  }
+
+  if (req.files.file && req.files.file[0]) {
+    fileData = `data:${req.files.file[0].mimetype};base64,${req.files.file[0].buffer.toString("base64")}`;
+  }
+
+  try {
+    await pool.query(
+      "INSERT INTO notes (title, content, image, file) VALUES ($1, $2, $3, $4)",
+      [title, content, imageData, fileData]
+    );
+    res.sendStatus(201);
+  } catch (err) {
+    res.status(500).send("Insert error");
+  }
 });
 
 app.listen(port, () => {
-  console.log(`ZapNote backend running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
