@@ -176,8 +176,8 @@ body {
 }
 
   .note-card {
-    padding: 12px;
-  }
+  position: relative; /* Required for absolute children */
+  padding-bottom: 30px; /* Add space for timestamp */
 }
 
 .note-card .timestamp {
