@@ -31,27 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const notes = await res.json();
 
       notes.forEach(note => {
-        const card = document.createElement('div');
-        card.className = 'note-card';
+  const card = document.createElement('div');
+  card.className = 'note-card';
+  card.style.backgroundColor = note.color || '#1a1a1a'; // Set note color
 
-        const date = new Date(note.created_at).toLocaleString();
+  card.innerHTML = `
+    <h3 contenteditable="true" onblur="editNote(${note.id}, this.innerText, 'title')">${note.title}</h3>
+    <p contenteditable="true" onblur="editNote(${note.id}, this.innerText, 'content')">${note.content}</p>
+    ${note.image ? `<img class="note-img" src="${note.image}" alt="Note Image" />` : ''}
+    ${note.file ? `<a href="${note.file}" download>📄 Download File</a>` : ''}
+    <span class="timestamp">${new Date(note.timestamp).toLocaleString()}</span>
+    <button onclick="deleteNote(${note.id})">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z" fill="#ff5e5e"/>
+      </svg>
+    </button>
+  `;
+  notesContainer.appendChild(card);
+});
 
-        card.innerHTML = `
-          <h3 contenteditable="true" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
-          <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
-          ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image" class="note-img">` : ''}
-          ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file.docx">Download File</a>` : ''}
-          <p class="timestamp">${date}</p>
-          <button onclick="deleteNote(${note.id})">
-          <button onclick="deleteNote(${note.id})">
-          <svg width="20px" height="auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z" fill="#ff5e5e"/>
-            </svg>
-          </button>
-        `;
-
-        notesContainer.appendChild(card);
-      });
     } catch (err) {
       console.error('Load error:', err);
     }
