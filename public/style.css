@@ -35,7 +35,8 @@ body {
 .note-entry {
   background: #1a1a1a;
   padding: 20px;
-  border-radius: 16px #9D4EDD40;
+  border-radius: 16px;
+  border: 2px solid #9D4EDD40;
   margin-bottom: 30px;
 }
 
@@ -105,7 +106,8 @@ body {
 
 .note-card {
   background-color: #1a1a1a;
-  border-radius: 16px #9D4EDD40;
+  border-radius: 16px;
+  border: 2px solid #9D4EDD40;
   padding: 15px;
   position: relative;
   overflow: hidden;
@@ -142,13 +144,15 @@ body {
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-  border-radius: 8px #70e4ff50;
+  border-radius: 8px;
+  border: 2px solid #70e4ff50;
   transition: all 0.3s ease;
 }
 
 .note-card a:hover {
   background-color: #3a3a3a;
-  border-radius: 8px #70e4ff50;
+  border-radius: 8px;
+  border: 2px solid #70e4ff50;
   box-shadow: 0 0 10px #70e4ff;
   color: #a0f0ff;
 }
@@ -167,7 +171,8 @@ body {
   color: #ff5c5c;
   font-size: 1.2rem;
   cursor: pointer;
-  border-radius: 8px #ff5c5c;
+  border-radius: 8px;
+  border: 2px solid #ff5c5c;
 }
 
   .note-card {
