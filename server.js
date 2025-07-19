@@ -19,26 +19,26 @@ app.use(cors());
 app.use(express.static('public'));
 app.use(express.json());
 
-app.post('/api/notes', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
-  const { title, content } = req.body;
-  const image = req.files['image']?.[0]?.buffer.toString('base64') || null;
-  const file = req.files['file']?.[0]?.buffer.toString('base64') || null;
-  const created_at = new Date().toISOString();
-
-  console.log("Incoming Note Data:", { title, content, hasImage: !!image, hasFile: !!file });
-
+app.post('/add', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
   try {
-    const result = await pool.query(
-      'INSERT INTO notes (title, content, image, file, created_at, deleted) VALUES ($1, $2, $3, $4, $5, false) RETURNING *',
-      [title, content, image, file, created_at]
+    const { title, content, color } = req.body; 
+
+    const image = req.files['image'] ? req.files['image'][0].buffer.toString('base64') : null;
+    const file = req.files['file'] ? req.files['file'][0].buffer.toString('base64') : null;
+    const fileName = req.files['file'] ? req.files['file'][0].originalname : null;
+
+    await pool.query(
+      'INSERT INTO notes (title, content, image, file, file_name, color, timestamp, deleted) VALUES ($1, $2, $3, $4, $5, $6, NOW(), false)',
+      [title, content, image, file, fileName, color]
     );
-    console.log("Note Saved:", result.rows[0]);
-    res.status(201).json(result.rows[0]);
+
+    res.redirect('/');
   } catch (err) {
-    console.error("DB Insert Error:", err.message);
+    console.error(err);
     res.status(500).send('Error saving note');
   }
 });
+
 
 
 app.get('/api/notes', async (req, res) => {
