@@ -20,10 +20,11 @@
     </div>
 
     <!-- Note Form -->
-    <form id="note-form">
-      <textarea id="note-input" placeholder="Write your note here..." rows="3"></textarea>
-      <button type="submit">Add Note</button>
-    </form>
+    <form id="note-form" enctype="multipart/form-data">
+  <textarea id="note-input" placeholder="Write your note here..." rows="3"></textarea>
+  <input type="file" id="image-input" accept="image/*">
+  <button type="submit">Add Note</button>
+</form>
 
     <!-- Notes List -->
     <div id="notes-list"></div>
