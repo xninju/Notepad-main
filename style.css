@@ -104,3 +104,8 @@ button[type="submit"]:hover {
 .note .delete-btn:hover {
   color: #ff5252;
 }
+
+#zapnote-logo text {
+  text-shadow: 0 0 4px #9D4EDD, 0 0 8px #9D4EDD88;
+}
+
