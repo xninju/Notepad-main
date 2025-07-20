@@ -162,7 +162,6 @@ body {
   color: #9D4EDD;
   margin-bottom: 10px;
   margin-top: 30px; 
-  margin-left: -82px;
   outline: none;
 }
 
@@ -323,7 +322,7 @@ body {
 .pin-btn {
   position: absolute;
   top: 10px;
-  left: 10px;
+  left: -40px;
   background: none;
   border: none;
   cursor: pointer;
