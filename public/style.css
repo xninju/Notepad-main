@@ -143,6 +143,7 @@ body {
 }
 
 .note-card {
+  position: relative;
   background-color: #1a1a1a;
   border-radius: 16px;
   border: 2px solid #9D4EDD40;
@@ -245,6 +246,22 @@ body {
   color: #ff5e5e;
   font-size: 1.2rem;
   cursor: pointer;
+}
+
+.note-card a.download-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  background-color: #333;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Pin Button */
