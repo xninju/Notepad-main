@@ -161,6 +161,7 @@ body {
 .note-card h3 {
   color: #9D4EDD;
   margin-bottom: 10px;
+  margin-top: 30px; 
   outline: none;
 }
 
