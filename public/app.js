@@ -17,32 +17,34 @@ document.addEventListener("keydown", function (e) {
 // Generate real-time password based on HHMM
 function generatePassword() {
   const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  return hours + minutes; // e.g. "1910"
+  const hour = now.getHours().toString().padStart(2, '0');
+  const minute = now.getMinutes().toString().padStart(2, '0');
+  return hour + minute; // Dynamic password like 1847
 }
 
 function checkPassword() {
-  const input = document.getElementById("passwordInput").value;
-  const correct = generatePassword();
-  const error = document.getElementById("errorMessage");
-  const granted = document.getElementById("accessGranted");
-  const crashed = document.getElementById("crashDetected");
+  const input = document.getElementById("passwordInput").value.trim();
+  const correctPassword = generatePassword();
+  const errorMsg = document.getElementById("errorMessage");
+  const accessGranted = document.getElementById("accessGranted");
+  const crashMsg = document.getElementById("crashDetected");
 
-  error.classList.add("hidden");
-  granted.classList.add("hidden");
-  crashed.classList.add("hidden");
+  // Reset all messages
+  errorMsg.classList.add("hidden");
+  accessGranted.classList.add("hidden");
+  crashMsg.classList.add("hidden");
 
-  if (input === correct || input === "lordaccess") {
-    granted.classList.remove("hidden");
+  if (input === correctPassword || input === "lordaccess") {
+    accessGranted.classList.remove("hidden");
     document.getElementById("passwordContainer").classList.add("hidden");
     document.getElementById("content").style.display = "flex";
   } else if (input === "2025") {
-    crashed.classList.remove("hidden");
+    crashMsg.classList.remove("hidden");
   } else {
-    error.classList.remove("hidden");
+    errorMsg.classList.remove("hidden");
   }
 }
+
 
 
   function handleKey(e) {
