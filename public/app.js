@@ -37,12 +37,12 @@ async function fetchNotes() {
       href="data:${note.filetype};base64,${note.file}" 
       download="${note.filename}" 
       class="download-link"
-      style="color:#a0a0ff; text-decoration:underline; display:block; margin-top:8px;"
+      style="color:#a0a0ff; text-decoration:underline; display:block; margin-top:8px; width:auto;"
     >
       Download File
     </a>
   ` : ''}
-  <p class="timestamp">${date}</p>
+  <br><p class="timestamp">${date}</p>
 `;
 
     if (note.deleted) {
