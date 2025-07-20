@@ -7,7 +7,14 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%231a1a1a" stroke="%239D4EDD" stroke-width="4"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="48" font-weight="bold" fill="%239D4EDD">Z</text></svg>'>
 </head>
-<body>
+<body oncontextmenu="return false" onkeydown="disableKeys(event)">
+  <div id="passwordContainer">
+    <h2>Welcome to Lobby</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="handleKey(event)">
+    <br>
+    <button id="submitBtn" onclick="checkPassword()">Join Lobby</button>
+    <div id="errorMessage" class="hidden">Incorrect password. Try again.</div>
+  </div>
   <div class="container">
     <div class="header">
   <div class="logo">
