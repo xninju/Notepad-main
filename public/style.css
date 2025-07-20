@@ -338,66 +338,86 @@ body {
   #notes {
     grid-template-columns: repeat(2, 1fr);
   }
-}
 
-#auth-overlay {
-  position: fixed;
-  z-index: 9999;
-  inset: 0;
-  backdrop-filter: blur(15px);
-  background: rgba(17, 17, 17, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.auth-box {
-  background: ;
-  padding: 2rem;
-  border-radius: 1rem;
-  text-align: center;
-  max-width: 300px;
-  width: 100%;
-}
+ #passwordContainer {
+      background: #0a0a0a;
+      border: 1px solid #2d2d2d;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
 
-.auth-box h2 {
-  color: #fff;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-}
+    #passwordContainer h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #ffffff;
+      font-weight: bold;
+    }
 
-.auth-box input {
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  outline: none;
-  background: #222;
-  color: #fff;
-  font-size: 1rem;
-  width: 100%;
-  margin-bottom: 1rem;
-}
+    #passwordInput {
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 1rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #0f0f0f;
+      color: #fff;
+      margin-bottom: 10px;
+      outline: none;
+    }
 
-.auth-box button {
-  margin-top: 0.5rem;
-  padding: 0.6rem 1rem;
-  width: 100%;
-  border: 1px solid #ff5e5e;
-  background: #ff5e5e;
-  color: white;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
+    #passwordInput::placeholder {
+      color: #888;
+    }
 
-.auth-box button:hover {
-  background: #ff3d3d;
-  border-color: #ff3d3d;
-}
+    #passwordInput:focus {
+      border-color: #6f4bd8;
+    }
 
-#auth-error {
-  margin-top: 0.5rem;
-  color: red;
-  display: none;
-}
+    #submitBtn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #1870ed, #6f4bd8);
+      color: white;
+      cursor: pointer;
+    }
+
+    #submitBtn:hover {
+      background: linear-gradient(to right, #145bd1, #5a3dbb);
+    }
+
+    #errorMessage {
+      margin-top: 10px;
+      color: red;
+      font-size: 0.9rem;
+    }
+
+    #content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #crashScreen {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: #ff0033;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
