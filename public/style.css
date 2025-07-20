@@ -250,12 +250,16 @@ body {
 .pin-btn {
   position: absolute;
   top: 10px;
-  left: -200px;
+  left: 10px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 4px;
+  color: #ffc107;
+  font-size: 1.2rem;
+  z-index: 1;
 }
+
 
 /* Responsive Note Layout */
 #notes {
