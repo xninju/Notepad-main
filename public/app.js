@@ -39,7 +39,7 @@ async function fetchNotes() {
       class="download-link"
       style="color:#a0a0ff; text-decoration:underline; display:block; margin-top:8px;"
     >
-      Download ${note.filename}
+      Download File
     </a>
   ` : ''}
   <p class="timestamp">${date}</p>
