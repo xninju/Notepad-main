@@ -228,7 +228,7 @@ body {
 
 .note-card .timestamp {
   position: absolute;
-  top: 10px;
+  bottom: 20px;
   right: 10px;
   font-size: 0.75rem;
   color: #888;
@@ -322,7 +322,7 @@ body {
 .pin-btn {
   position: absolute;
   top: 10px;
-  left: -80px;
+  left: -180px;
   background: none;
   border: none;
   cursor: pointer;
