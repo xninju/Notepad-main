@@ -133,3 +133,61 @@ document.addEventListener('keydown', function (e) {
     alert("Save is disabled on this page.");
   }
 });
+
+// Disable right-click and developer tools
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+document.addEventListener("keydown", function (e) {
+  if (
+    e.keyCode === 123 || // F12
+    (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+    (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
+    (e.ctrlKey && e.keyCode === 83) || // Ctrl+S
+    (e.ctrlKey && e.shiftKey && e.keyCode === 67) // Ctrl+Shift+C
+  ) {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// Generates a password based on current time + offset
+function generatePassword() {
+  const now = new Date();
+  let hours = now.getHours().toString().padStart(2, '0');
+  let minutes = now.getMinutes().toString().padStart(2, '0');
+  return (parseInt(hours + minutes) + 1001).toString(); // e.g., 0735 + 1001 = 1736
+}
+
+// Check password input
+window.checkPassword = function () {
+  const input = document.getElementById("passwordInput").value;
+  const correct = generatePassword();
+  const granted = document.getElementById("accessGranted");
+  const error = document.getElementById("errorMessage");
+  const crash = document.getElementById("crashMessage");
+  const container = document.getElementById("passwordContainer");
+  const content = document.getElementById("content");
+
+  // Hide all messages first
+  granted.classList.add("hidden");
+  error.classList.add("hidden");
+  crash.classList.add("hidden");
+
+  if (input === correct || input === "lordaccess") {
+    granted.classList.remove("hidden");
+    container.classList.add("hidden");
+    content.style.display = "block";
+  } else if (input === "2025") {
+    crash.classList.remove("hidden");
+  } else {
+    error.classList.remove("hidden");
+  }
+};
+
+// Handle Enter key
+window.handleKey = function (event) {
+  if (event.key === "Enter") {
+    checkPassword();
+  }
+};
+
