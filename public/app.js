@@ -32,7 +32,9 @@ async function fetchNotes() {
       <h3 contenteditable="true" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
       <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
       ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image" class="note-img">` : ''}
-      ${note.file ? `<a href="data:application/octet-stream;base64,${note.file}" download="file.docx">Download File</a>` : ''}
+      ${note.file && note.fileName && note.fileType ? `
+  <a href="data:${note.fileType};base64,${note.file}" download="${note.fileName}">Download ${note.fileName}</a>
+` : ''}
       <p class="timestamp">${date}</p>
     `;
 
