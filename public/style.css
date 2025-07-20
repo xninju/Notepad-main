@@ -19,36 +19,33 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   backdrop-filter: blur(15px);
-  background: rgba(12, 12, 12, 0.85);
-  border: 1px solid #2a2a2a;
-  border-radius: 18px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #2f2f2f;
   padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);
   text-align: center;
-  box-shadow: 0 0 30px rgba(144, 0, 255, 0.2);
   z-index: 9999;
   width: 90%;
   max-width: 360px;
-  color: #f1f1f1;
   font-family: 'Segoe UI', sans-serif;
 }
 
 #passwordContainer h2 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-size: 1.6rem;
   color: #ffffff;
-  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
 #passwordInput {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   font-size: 1rem;
-  background-color: #1a1a1a;
+  background-color: #111;
   border: 1px solid #444;
   border-radius: 10px;
   color: #fff;
   outline: none;
-  transition: border 0.3s ease;
 }
 
 #passwordInput:focus {
@@ -56,16 +53,15 @@ body {
 }
 
 #submitBtn {
-  margin-top: 20px;
-  padding: 12px 22px;
-  font-size: 0.95rem;
+  margin-top: 15px;
+  padding: 10px 20px;
   background: linear-gradient(to right, #9D4EDD, #6A0DAD);
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   color: white;
+  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 0 10px #9D4EDD;
-  transition: all 0.3s ease;
+  box-shadow: 0 0 8px #9D4EDD;
 }
 
 #submitBtn:hover {
@@ -76,21 +72,21 @@ body {
 #errorMessage,
 #accessGranted,
 #crashDetected {
-  margin-top: 15px;
+  margin-top: 12px;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 #errorMessage {
-  color: #ff3d3d;
-}
-
-#accessGranted {
-  color: #4CFF4C;
+  color: #ff4a4a;
 }
 
 #crashDetected {
-  color: #ff6d6d;
+  color: #ff3333;
+}
+
+.hidden {
+  display: none;
 }
 
 
