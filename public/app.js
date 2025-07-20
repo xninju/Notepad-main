@@ -1,55 +1,47 @@
 window.onload = function () {
- // Disable right-click and devtools shortcuts
-document.addEventListener("contextmenu", (e) => e.preventDefault());
-document.addEventListener("keydown", function (e) {
-  if (
-    e.keyCode === 123 || // F12
-    (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-    (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
-    (e.ctrlKey && e.keyCode === 83) || // Ctrl+S
-    (e.ctrlKey && e.shiftKey && e.keyCode === 67) // Ctrl+Shift+C
-  ) {
-    e.preventDefault();
-    return false;
-  }
+// Real-time password lock system for ZapNote
+document.addEventListener("DOMContentLoaded", () => {
+  const lockScreen = document.createElement("div");
+  lockScreen.id = "lockScreen";
+  lockScreen.innerHTML = `
+    <div class="lock-box">
+      <h2>Welcome to ZapNote</h2>
+      <input type="password" id="passInput" placeholder="Enter Password" />
+      <button id="unlockBtn">Enter Password</button>
+      <p id="passError" class="error-text"></p>
+    </div>
+  `;
+  document.body.appendChild(lockScreen);
+
+  const input = document.getElementById("passInput");
+  const button = document.getElementById("unlockBtn");
+  const errorMsg = document.getElementById("passError");
+
+  const removeLock = () => {
+    lockScreen.classList.add("unlocking");
+    setTimeout(() => {
+      lockScreen.remove();
+    }, 500);
+  };
+
+  button.addEventListener("click", () => {
+    const pass = input.value.trim();
+    const now = new Date();
+    const correct = `${now.getHours()}${now.getMinutes()}`;
+    if (pass === correct) {
+      removeLock();
+    } else if (pass === "2025") {
+      errorMsg.innerHTML = `<span style="color: red;">❌ System Crash Detected... Please Reload.</span>`;
+    } else {
+      errorMsg.textContent = "Incorrect password. Try again.";
+    }
+  });
+
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") button.click();
+  });
 });
 
-// Generate real-time password based on HHMM
-function generatePassword() {
-  const now = new Date();
-  const hour = now.getHours().toString().padStart(2, '0');
-  const minute = now.getMinutes().toString().padStart(2, '0');
-  return hour + minute; // Dynamic password like 1847
-}
-
-function checkPassword() {
-  const input = document.getElementById("passwordInput").value.trim();
-  const correctPassword = generatePassword();
-  const errorMsg = document.getElementById("errorMessage");
-  const accessGranted = document.getElementById("accessGranted");
-  const crashMsg = document.getElementById("crashDetected");
-
-  // Reset all messages
-  errorMsg.classList.add("hidden");
-  accessGranted.classList.add("hidden");
-  crashMsg.classList.add("hidden");
-
-  if (input === correctPassword || input === "lordaccess") {
-    accessGranted.classList.remove("hidden");
-    document.getElementById("passwordContainer").classList.add("hidden");
-    document.getElementById("content").style.display = "flex";
-  } else if (input === "2025") {
-    crashMsg.classList.remove("hidden");
-  } else {
-    errorMsg.classList.remove("hidden");
-  }
-}
-
-
-
-  function handleKey(e) {
-    if (e.key === "Enter") checkPassword();
-  }
 
   // Attach events
   document.getElementById("submitBtn").addEventListener("click", checkPassword);
