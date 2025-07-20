@@ -13,82 +13,81 @@ body {
   padding: 20px;
 }
 
-#passwordContainer {
+#lockScreen {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   backdrop-filter: blur(15px);
-  background: rgba(20, 20, 20, 0.9);
-  border: 1px solid #2f2f2f;
-  padding: 40px 30px;
-  border-radius: 16px;
-  box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);
-  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
   z-index: 9999;
-  width: 90%;
-  max-width: 360px;
-  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#passwordContainer h2 {
-  font-size: 1.6rem;
-  color: #ffffff;
-  margin-bottom: 20px;
-}
-
-#passwordInput {
-  width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-  background-color: #111;
-  border: 1px solid #444;
-  border-radius: 10px;
-  color: #fff;
-  outline: none;
-}
-
-#passwordInput:focus {
-  border-color: #9D4EDD;
-}
-
-#submitBtn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: linear-gradient(to right, #9D4EDD, #6A0DAD);
-  border: none;
-  border-radius: 10px;
+.lock-box {
+  background: #111;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #9d4edd;
+  text-align: center;
   color: white;
-  font-size: 1rem;
+  min-width: 300px;
+  animation: fadeIn 0.4s ease;
+}
+
+.lock-box h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 5px #9d4edd;
+}
+
+.lock-box input {
+  padding: 0.6rem;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  width: 100%;
+  background: #1a1a1a;
+  color: #fff;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 5px rgba(157, 78, 221, 0.5);
+}
+
+.lock-box button {
+  background-color: #9d4edd;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
   cursor: pointer;
-  box-shadow: 0 0 8px #9D4EDD;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 10px #9d4edd;
+  transition: 0.2s;
 }
 
-#submitBtn:hover {
-  background: linear-gradient(to right, #6A0DAD, #3e008e);
-  box-shadow: 0 0 15px #a754ff;
+.lock-box button:hover {
+  background: #7b2cbf;
 }
 
-#errorMessage,
-#accessGranted,
-#crashDetected {
-  margin-top: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
+.error-text {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: red;
+  min-height: 1.2rem;
 }
 
-#errorMessage {
-  color: #ff4a4a;
+.unlocking {
+  animation: fadeOut 0.4s ease forwards;
 }
 
-#crashDetected {
-  color: #ff3333;
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.hidden {
-  display: none;
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
 }
-
 
 /* Default (Desktop) */
 .header {
