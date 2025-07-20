@@ -248,7 +248,7 @@ body {
   cursor: pointer;
 }
 
-.note-card a.download-btn {
+.download-btn {
   display: inline-block;
   padding: 6px 12px;
   margin-top: 8px;
