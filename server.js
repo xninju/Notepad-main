@@ -20,12 +20,16 @@ const upload = multer({ storage: storage });
 app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
   const { title, content, color, pinned = false } = req.body;
   const image = req.files?.image?.[0]?.buffer.toString('base64') || null;
-  const file = req.files?.file?.[0]?.buffer.toString('base64') || null;
+
+  const fileData = req.files?.file?.[0];
+  const file = fileData ? fileData.buffer.toString('base64') : null;
+  const filename = fileData ? fileData.originalname : null;
+  const filetype = fileData ? fileData.mimetype : null;
 
   try {
     await pool.query(
-      'INSERT INTO notes (title, content, image, file, color, pinned, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-      [title, content, image, file, color, pinned]
+      'INSERT INTO notes (title, content, image, file, filename, filetype, color, pinned, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+      [title, content, image, file, filename, filetype, color, pinned]
     );
     res.status(200).send('Note saved');
   } catch (err) {
@@ -33,6 +37,7 @@ app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), asyn
     res.status(500).send('Error saving note');
   }
 });
+
 
 app.get('/get-notes', async (req, res) => {
   try {
