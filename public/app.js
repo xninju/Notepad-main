@@ -98,37 +98,6 @@ function togglePin(id) {
 
 fetchNotes();
 
-window.addEventListener("DOMContentLoaded", () => {
-  const overlay = document.createElement("div");
-  overlay.id = "auth-overlay";
-  overlay.innerHTML = `
-    <div class="auth-box">
-      <h2>Enter Password</h2>
-      <input type="password" id="auth-input" maxlength="4" />
-      <button id="auth-submit">Unlock</button>
-      <p id="auth-error" style="color:red; display:none;">Wrong password</p>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  document.body.style.overflow = "hidden";
-
-  document.getElementById("auth-submit").onclick = () => {
-    const userInput = document.getElementById("auth-input").value;
-    const now = new Date();
-    const hours = now.getHours(); // 24-hr
-    const minutes = now.getMinutes();
-    const password = `${hours}${minutes.toString().padStart(2, '0')}`;
-
-    if (userInput === password) {
-      overlay.remove();
-      document.body.style.overflow = "auto";
-    } else {
-      document.getElementById("auth-error").style.display = "block";
-    }
-  };
-});
-
 // Disable right-click
 document.addEventListener('contextmenu', (e) => {
   e.preventDefault();
