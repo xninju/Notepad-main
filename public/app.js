@@ -1,51 +1,49 @@
 window.onload = function () {
-  // Prevent right-click and certain key shortcuts
-  document.addEventListener("contextmenu", (e) => e.preventDefault());
-  document.addEventListener("keydown", (e) => {
-    if (
-      e.keyCode === 123 || // F12
-      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-      (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
-      (e.ctrlKey && e.keyCode === 83) || // Ctrl+S
-      (e.ctrlKey && e.shiftKey && e.keyCode === 67)
-    ) {
-      e.preventDefault();
-    }
-  });
-
-  function generatePassword() {
-    const now = new Date();
-    const hour = now.getHours().toString().padStart(2, "0");
-    const minute = now.getMinutes().toString().padStart(2, "0");
-    return (parseInt(hour + minute) + 1001).toString();
+ // Disable right-click and devtools shortcuts
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("keydown", function (e) {
+  if (
+    e.keyCode === 123 || // F12
+    (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+    (e.ctrlKey && e.keyCode === 85) || // Ctrl+U
+    (e.ctrlKey && e.keyCode === 83) || // Ctrl+S
+    (e.ctrlKey && e.shiftKey && e.keyCode === 67) // Ctrl+Shift+C
+  ) {
+    e.preventDefault();
+    return false;
   }
+});
 
-  function checkPassword() {
-    const input = document.getElementById("passwordInput").value;
-    const correct = generatePassword();
+// Generate real-time password based on HHMM
+function generatePassword() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return hours + minutes; // e.g. "1910"
+}
 
-    const errorMsg = document.getElementById("errorMessage");
-    const accessMsg = document.getElementById("accessGranted");
-    const crashMsg = document.getElementById("crashMessage");
-    const container = document.getElementById("passwordContainer");
-    const content = document.getElementById("content");
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  const correct = generatePassword();
+  const error = document.getElementById("errorMessage");
+  const granted = document.getElementById("accessGranted");
+  const crashed = document.getElementById("crashDetected");
 
-    errorMsg.classList.add("hidden");
-    accessMsg.classList.add("hidden");
-    crashMsg.classList.add("hidden");
+  error.classList.add("hidden");
+  granted.classList.add("hidden");
+  crashed.classList.add("hidden");
 
-    if (input === correct || input === "lordaccess") {
-      accessMsg.classList.remove("hidden");
-      setTimeout(() => {
-        container.style.display = "none";
-        content.style.display = "flex";
-      }, 1000);
-    } else if (input === "2025") {
-      crashMsg.classList.remove("hidden");
-    } else {
-      errorMsg.classList.remove("hidden");
-    }
+  if (input === correct || input === "lordaccess") {
+    granted.classList.remove("hidden");
+    document.getElementById("passwordContainer").classList.add("hidden");
+    document.getElementById("content").style.display = "flex";
+  } else if (input === "2025") {
+    crashed.classList.remove("hidden");
+  } else {
+    error.classList.remove("hidden");
   }
+}
+
 
   function handleKey(e) {
     if (e.key === "Enter") checkPassword();
