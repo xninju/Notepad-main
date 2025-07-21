@@ -141,9 +141,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const minutes = now.getMinutes();
     const password = `${hours}${minutes.toString().padStart(2, '0')}`;
 
-     if (e.key === "Enter") {
-    document.getElementById("auth-submit").click();
-  }
+  document.getElementById("auth-input").addEventListener("keyup", (e) => {
+    if (e.key === "Enter") submitPassword();
+  });
 
     if (userInput === password) {
       overlay.remove();
