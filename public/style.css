@@ -404,7 +404,13 @@ body {
   margin-bottom: 1rem;
 }
 
+.auth-box input:focus {
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 5px #00ffff;
+}
 .auth-box button {
+  background: linear-gradient(135deg, #00e0ff, #ff00ff);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
   margin-top: 0.5rem;
   padding: 0.6rem 1rem;
   width: 100%;
@@ -420,6 +426,7 @@ body {
 .auth-box button:hover {
   background: #ff3d3d;
   border-color: #ff3d3d;
+  opacity: 0.9;
 }
 
 #auth-error {
