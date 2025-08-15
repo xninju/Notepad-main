@@ -384,6 +384,28 @@ body {
   font-size: 0.875rem;
 }
 
+/* Creator Toggle */
+.creator-link {
+  position: fixed;
+  left: 15px;
+  bottom: 15px;
+  background: #9c3ef9;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.creator-link:hover {
+  box-shadow: 0 0 6px #9c3ef9, 0 0 12px #9c3ef9;
+  color: white;
+  transform: translateX(2px);
+}
+
 /* Responsive Adjustments */
 @media screen and (max-width: 768px) {
   body {
