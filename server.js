@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_DtUXSyb7x2vh@ep-spring-field-a57rrcca-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
@@ -20,6 +20,7 @@ const upload = multer({ storage: storage });
 app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
   const { title, content, color } = req.body;
   const image = req.files?.image?.[0]?.buffer.toString('base64') || null;
+  const image_type = req.files?.image?.[0]?.mimetype || null;
   const fileData = req.files?.file?.[0];
   const file = fileData ? fileData.buffer.toString('base64') : null;
   const filename = fileData ? fileData.originalname : null;
@@ -27,8 +28,8 @@ app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), asyn
 
   try {
     await pool.query(
-      'INSERT INTO notes (title, content, image, file, filename, filetype, color, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())',
-      [title, content, image, file, filename, filetype, color]
+      'INSERT INTO notes (title, content, image, image_type, file, filename, filetype, color, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+      [title, content, image, image_type, file, filename, filetype, color]
     );
     res.status(200).send('Note saved');
   } catch (err) {
@@ -92,21 +93,6 @@ app.delete('/delete-note/:id', async (req, res) => {
   } catch (err) {
     console.error('Delete error:', err);
     res.status(500).send('Error deleting note');
-  }
-});
-
-app.post('/execute-sql', async (req, res) => {
-  const { query } = req.body;
-  try {
-    // Only allow SELECT queries for safety
-    if (!query.trim().toUpperCase().startsWith('SELECT')) {
-      return res.status(400).json({ error: 'Only SELECT queries are allowed' });
-    }
-    const result = await pool.query(query);
-    res.json({ success: true, data: result.rows });
-  } catch (err) {
-    console.error('SQL query error:', err);
-    res.status(500).json({ error: 'Error executing query', details: err.message });
   }
 });
 
