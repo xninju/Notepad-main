@@ -134,41 +134,6 @@ body {
   background-color: #7c39c9;
 }
 
-/* SQL Editor */
-.sql-editor {
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 16px;
-  border: 2px solid #9D4EDD40;
-  margin-bottom: 30px;
-}
-
-.sql-editor h2 {
-  color: #9D4EDD;
-  margin-bottom: 15px;
-}
-
-.sql-editor textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #292929;
-  color: #fff;
-  font-size: 1rem;
-  resize: vertical;
-}
-
-.sql-editor textarea::placeholder {
-  color: #aaa;
-}
-
-#sqlResults {
-  margin-top: 15px;
-  color: #ccc;
-}
-
 /* Notes Section */
 #notes {
   display: grid;
@@ -207,6 +172,7 @@ body {
   border-radius: 8px;
   margin-top: 10px;
   box-shadow: 0 0 5px #000;
+  cursor: pointer;
 }
 
 .note-card a {
@@ -291,14 +257,12 @@ body {
     font-size: 2rem;
   }
 
-  .note-entry,
-  .sql-editor {
+  .note-entry {
     padding: 15px;
   }
 
   .note-entry input,
-  .note-entry textarea,
-  .sql-editor textarea {
+  .note-entry textarea {
     font-size: 0.9rem;
     padding: 10px;
   }
