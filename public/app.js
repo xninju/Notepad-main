@@ -24,24 +24,25 @@ async function fetchNotes() {
   notes.forEach((note) => {
     const card = document.createElement('div');
     card.className = 'note-card';
-    card.style.backgroundColor = note.color || '#1a1a1a';
+    card.style.backgroundColor = note.color || '#1f2937';
 
     const date = new Date(note.created_at).toLocaleString();
 
     card.innerHTML = `
-      <h3 contenteditable="true" class="note-title" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
-      <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
+      <h3 contenteditable="true" class="note-title" onblur="updateNote(${note.id}, this.innerText, '${note.content || ''}')">${note.title}</h3>
+      <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content || ''}</p>
       ${note.image ? `<img src="data:${note.image_type};base64,${note.image}" alt="note image" class="note-img" onclick="viewImage(this.src)">` : ''}
       ${note.file && note.filename && note.filetype ? `
         <a href="data:${note.filetype};base64,${note.file}" download="${note.filename}" class="download-link">
           Download File
         </a>
       ` : ''}
-      <br><p class="timestamp">${date}</p>
+      <p class="timestamp">${date}</p>
     `;
 
     if (note.deleted) {
       const restoreBtn = document.createElement('button');
+      restoreBtn.className = 'action-btn restore-btn';
       restoreBtn.innerHTML = '🔁';
       restoreBtn.title = 'Restore';
       restoreBtn.onclick = async () => {
@@ -50,6 +51,7 @@ async function fetchNotes() {
       };
 
       const deleteForeverBtn = document.createElement('button');
+      deleteForeverBtn.className = 'action-btn delete-forever-btn';
       deleteForeverBtn.innerHTML = '🗑️';
       deleteForeverBtn.title = 'Delete Forever';
       deleteForeverBtn.onclick = async () => {
@@ -62,7 +64,8 @@ async function fetchNotes() {
     }
 
     const deleteBtn = document.createElement('button');
-    deleteBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ff5e5e" xmlns="http://www.w3.org/2000/svg"><path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1z"/></svg>`;
+    deleteBtn.className = 'action-btn delete-btn';
+    deleteBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" xmlns="http://www.w3.org/2000/svg"><path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1z"/></svg>`;
     deleteBtn.onclick = () => deleteNote(note.id);
 
     card.appendChild(deleteBtn);
@@ -88,28 +91,15 @@ function deleteNote(id) {
 
 function viewImage(src) {
   const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100%';
-  modal.style.height = '100%';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
-  modal.style.zIndex = '1000';
-
-  const img = document.createElement('img');
-  img.src = src;
-  img.style.maxWidth = '90%';
-  img.style.maxHeight = '90%';
-
-  modal.appendChild(img);
+  modal.className = 'image-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <img src="${src}" alt="Full image">
+    </div>
+  `;
   modal.onclick = () => modal.remove();
   document.body.appendChild(modal);
 }
-
-fetchNotes();
 
 window.addEventListener("DOMContentLoaded", () => {
   const overlay = document.createElement("div");
@@ -178,3 +168,5 @@ document.addEventListener('keydown', function (e) {
     alert("Save is disabled on this page.");
   }
 });
+
+fetchNotes();
