@@ -18,7 +18,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
-  const { title, content, color } = req.body;
+  let { title, content, color } = req.body;
+  content = content || ''; // Allow empty content
   const image = req.files?.image?.[0]?.buffer.toString('base64') || null;
   const image_type = req.files?.image?.[0]?.mimetype || null;
   const fileData = req.files?.file?.[0];
@@ -97,5 +98,5 @@ app.delete('/delete-note/:id', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`ZapNote server running on port ${port}`);
+  console.log(`NotaForge server running on port ${port}`);
 });
