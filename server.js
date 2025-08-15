@@ -1,111 +1,113 @@
-const express = require("express");
-const multer = require("multer");
-const { Pool } = require("pg");
-const path = require("path");
-const fs = require("fs");
-
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const { Pool } = require('pg');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Database connection
 const pool = new Pool({
-  connectionString: "postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+  connectionString: 'postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  ssl: { rejectUnauthorized: false }
 });
 
-// Middleware
-app.use(express.static("public"));
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Multer setup
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Get all notes
-app.get("/notes", async (req, res) => {
+app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
+  const { title, content, color, pinned = false } = req.body;
+  const image = req.files?.image?.[0]?.buffer.toString('base64') || null;
+
+  const fileData = req.files?.file?.[0];
+  const file = fileData ? fileData.buffer.toString('base64') : null;
+  const filename = fileData ? fileData.originalname : null;
+  const filetype = fileData ? fileData.mimetype : null;
+
   try {
-    const result = await pool.query("SELECT * FROM notes ORDER BY created_at DESC");
+    await pool.query(
+      'INSERT INTO notes (title, content, image, file, filename, filetype, color, pinned, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+      [title, content, image, file, filename, filetype, color, pinned]
+    );
+    res.status(200).send('Note saved');
+  } catch (err) {
+    console.error('Insert error:', err);
+    res.status(500).send('Error saving note');
+  }
+});
+
+
+app.get('/get-notes', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM notes WHERE deleted = false ORDER BY pinned DESC, id DESC');
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error retrieving notes");
+    console.error('Fetch error:', err);
+    res.status(500).send('Error fetching notes');
   }
 });
 
-// Add new note
-app.post("/notes", upload.fields([{ name: "image" }, { name: "file" }]), async (req, res) => {
-  const { title, content, color } = req.body;
-  const image = req.files["image"] ? req.files["image"][0].buffer.toString("base64") : null;
-  const file = req.files["file"] ? req.files["file"][0].buffer.toString("base64") : null;
-  const fileName = req.files["file"] ? req.files["file"][0].originalname : null;
-
+app.put('/update-note/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
   try {
-    const result = await pool.query(
-      `INSERT INTO notes (title, content, color, image, file, filename, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`,
-      [title, content, color, image, file, fileName]
+    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content, id]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).send('Error updating note');
+  }
+});
+
+app.put('/restore-note/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query(
+      'UPDATE notes SET deleted = false, deleted_at = NULL WHERE id = $1',
+      [id]
     );
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error restoring note:', error);
+    res.status(500).json({ error: 'Failed to restore note' });
+  }
+});
+
+app.delete('/permanently-delete/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM notes WHERE id = $1', [id]);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error permanently deleting note:', error);
+    res.status(500).json({ error: 'Failed to permanently delete note' });
+  }
+});
+
+app.delete('/delete-note/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('UPDATE notes SET deleted = true WHERE id = $1', [id]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).send('Error deleting note');
+  }
+});
+
+app.patch('/pin/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('UPDATE notes SET pinned = NOT pinned WHERE id = $1 RETURNING *', [id]);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error adding note");
+    console.error('Pin toggle error:', err);
+    res.status(500).send('Error toggling pin');
   }
 });
 
-// Edit note
-app.put("/notes/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, content, color } = req.body;
-
-  try {
-    const result = await pool.query(
-      "UPDATE notes SET title = $1, content = $2, color = $3 WHERE id = $4 RETURNING *",
-      [title, content, color, id]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error updating note");
-  }
-});
-
-// Soft delete (move to bin)
-app.delete("/notes/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    await pool.query("UPDATE notes SET deleted = TRUE WHERE id = $1", [id]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error deleting note");
-  }
-});
-
-// Restore from bin
-app.put("/restore/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    await pool.query("UPDATE notes SET deleted = FALSE WHERE id = $1", [id]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error restoring note");
-  }
-});
-
-// Permanently delete
-app.delete("/permanent/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    await pool.query("DELETE FROM notes WHERE id = $1", [id]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error permanently deleting note");
-  }
-});
-
-// Start server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`ZapNote server running on port ${port}`);
 });
