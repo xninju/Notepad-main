@@ -18,13 +18,14 @@ body {
 /* Navbar */
 .navbar {
   position: fixed;
-  top: 16px;
+  top: 5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
+  width: 50%;
   max-width: 1200px;
+  height: 60px;
   background: #262626;
-  border-radius: 24px;
+  border-radius: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   padding: 12px 24px;
   z-index: 100;
@@ -37,11 +38,13 @@ body {
 }
 
 .navbar .logo svg {
+  margin-top: -3px;
   width: 40px;
   height: 40px;
 }
 
 .navbar .title {
+  margin-top: -12px;
   font-size: 1.5rem;
   font-weight: 700;
   color: #eab308;
@@ -185,6 +188,8 @@ body {
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  min-height: 150px; /* Ensure enough space for content */
 }
 
 .note-card:hover {
@@ -210,7 +215,7 @@ body {
   color: #d1d5db;
   font-size: 0.95rem;
   outline: none;
-  margin-bottom: 12px;
+  margin-bottom: 28px; /* Increased to prevent timestamp overlap */
 }
 
 .note-img {
@@ -218,7 +223,7 @@ body {
   max-height: 200px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 28px; /* Increased to prevent timestamp overlap */
   cursor: pointer;
   transition: transform 0.3s ease;
 }
@@ -238,7 +243,7 @@ body {
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
-  margin-bottom: 12px;
+  margin-bottom: 28px; /* Increased to prevent timestamp overlap */
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
@@ -251,8 +256,11 @@ body {
   font-size: 0.75rem;
   color: #9ca3af;
   position: absolute;
-  bottom: 12px;
-  right: 16px;
+  bottom: 8px;
+  right: 12px;
+  background: #262626; /* Match card background */
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .note-actions {
@@ -370,7 +378,7 @@ body {
 
   .container {
     flex-direction: column;
-    margin-top: 70px;
+    margin-top: 80px; /* Space below navbar */
   }
 
   .note-entry {
@@ -378,6 +386,7 @@ body {
     position: static;
     height: auto;
     margin-bottom: 24px;
+    margin-top: 16px; /* Space below navbar in mobile view */
   }
 
   .notes-container {
