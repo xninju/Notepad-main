@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: 'postgresql://neondb_owner:npg_DtUXSyb7x2vh@ep-spring-field-a57rrcca-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
   ssl: { rejectUnauthorized: false }
 });
 
