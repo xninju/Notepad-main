@@ -62,7 +62,6 @@ body {
   }
 }
 
-
 /* Container */
 .container {
   max-width: 800px;
@@ -135,6 +134,41 @@ body {
   background-color: #7c39c9;
 }
 
+/* SQL Editor */
+.sql-editor {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #9D4EDD40;
+  margin-bottom: 30px;
+}
+
+.sql-editor h2 {
+  color: #9D4EDD;
+  margin-bottom: 15px;
+}
+
+.sql-editor textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #292929;
+  color: #fff;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.sql-editor textarea::placeholder {
+  color: #aaa;
+}
+
+#sqlResults {
+  margin-top: 15px;
+  color: #ccc;
+}
+
 /* Notes Section */
 #notes {
   display: grid;
@@ -153,16 +187,10 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* Highlight pinned notes */
-.note-card.pinned {
-  border: 2px solid #ffc107;
-}
-
-
 .note-card h3 {
   color: #9D4EDD;
   margin-bottom: 10px;
-  margin-top: 30px; 
+  margin-top: 10px;
   outline: none;
 }
 
@@ -222,7 +250,7 @@ body {
   border: 2px solid #ff5c5c;
 }
 
-  .note-card {
+.note-card {
   background-color: inherit; /* use JS-assigned color */
   position: relative; /* Required for absolute children */
   padding-bottom: 30px; /* Add space for timestamp */
@@ -235,17 +263,6 @@ body {
   font-size: 0.75rem;
   color: #888;
   text-align: right;
-}
-
-.note-card button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  color: #ff5e5e;
-  font-size: 1.2rem;
-  cursor: pointer;
 }
 
 .download-btn {
@@ -264,38 +281,24 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Pin Button */
-.pin-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: #ffc107;
-  font-size: 1.2rem;
-  z-index: 1;
-}
-
-
 /* Responsive Note Layout */
 #notes {
   grid-template-columns: repeat(auto-fill, minmax(auto, 1fr));
 }
-
 
 @media screen and (max-width: 768px) {
   .header h1 {
     font-size: 2rem;
   }
 
-  .note-entry {
+  .note-entry,
+  .sql-editor {
     padding: 15px;
   }
 
   .note-entry input,
-  .note-entry textarea {
+  .note-entry textarea,
+  .sql-editor textarea {
     font-size: 0.9rem;
     padding: 10px;
   }
@@ -344,9 +347,6 @@ body {
     bottom: 8px;
     right: 8px;
   }
-  .pin-btn {
-  left: -80px;
-  }
 }
 
 @media screen and (max-width: 400px) {
@@ -394,7 +394,6 @@ body {
   color: #fff;
   margin-bottom: 1rem;
   font-size: 1.5rem;
-  #font-weight: bold;
 }
 
 .auth-box input {
@@ -410,7 +409,6 @@ body {
   color: #fff;
   font-size: 1rem;
   width: 100%;
-  ;
 }
 
 .auth-box input:focus {
@@ -431,7 +429,7 @@ body {
 }
 
 .auth-box button:hover {
- background: linear-gradient(to right, #6f4bd8, #9D4EDD);
+  background: linear-gradient(to right, #6f4bd8, #9D4EDD);
   opacity: 0.9;
 }
 
