@@ -1,9 +1,10 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { Pool } = require('pg');
+const fs = require('fs').promises;
 const app = express();
 const port = process.env.PORT || 3000;
+const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -14,27 +15,93 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// Configure multer with disk storage and file limits
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Temporary directory for uploads
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
 
-app.post('/add-note', upload.fields([{ name: 'images', maxCount: 10 }, { name: 'files', maxCount: 10 }]), async (req, res) => {
-  let { title, content, color } = req.body;
-  content = content || '';
-  const images = req.files?.images?.map(file => file.buffer.toString('base64')) || [];
-  const image_types = req.files?.images?.map(file => file.mimetype) || [];
-  const files = req.files?.files?.map(file => file.buffer.toString('base64')) || [];
-  const filenames = req.files?.files?.map(file => file.originalname) || [];
-  const filetypes = req.files?.files?.map(file => file.mimetype) || [];
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB per file
+    files: 5 // Max 5 files per field
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedFileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (file.fieldname === 'images' && allowedImageTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else if (file.fieldname === 'files' && allowedFileTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
+  }
+}).fields([
+  { name: 'images', maxCount: 5 },
+  { name: 'files', maxCount: 5 }
+]);
 
+// Ensure uploads directory exists
+fs.mkdir('uploads', { recursive: true }).catch(console.error);
+
+app.post('/add-note', async (req, res) => {
   try {
-    await pool.query(
-      'INSERT INTO notes (title, content, images, image_types, files, filenames, filetypes, color, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
-      [title, content, images, image_types, files, filenames, filetypes, color]
-    );
-    res.status(200).send('Note saved');
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).send(`Upload error: ${err.message}`);
+      } else if (err) {
+        return res.status(400).send(`Error: ${err.message}`);
+      }
+
+      let { title, content, color } = req.body;
+      content = content || '';
+      const images = [];
+      const image_types = [];
+      const files = [];
+      const filenames = [];
+      const filetypes = [];
+
+      // Process images
+      if (req.files?.images) {
+        for (const file of req.files.images) {
+          const fileContent = await fs.readFile(file.path);
+          images.push(fileContent.toString('base64'));
+          image_types.push(file.mimetype);
+          await fs.unlink(file.path); // Clean up temporary file
+        }
+      }
+
+      // Process files
+      if (req.files?.files) {
+        for (const file of req.files.files) {
+          const fileContent = await fs.readFile(file.path);
+          files.push(fileContent.toString('base64'));
+          filenames.push(file.originalname);
+          filetypes.push(file.mimetype);
+          await fs.unlink(file.path); // Clean up temporary file
+        }
+      }
+
+      try {
+        await pool.query(
+          'INSERT INTO notes (title, content, images, image_types, files, filenames, filetypes, color, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+          [title, content, images, image_types, files, filenames, filetypes, color]
+        );
+        res.status(200).send('Note saved');
+      } catch (dbErr) {
+        console.error('Insert error:', dbErr);
+        res.status(500).send('Error saving note');
+      }
+    });
   } catch (err) {
-    console.error('Insert error:', err);
-    res.status(500).send('Error saving note');
+    console.error('Server error:', err);
+    res.status(500).send('Server error');
   }
 });
 
