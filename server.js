@@ -53,7 +53,7 @@ app.put('/update-note/:id', async (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
   try {
-    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content, id]);
+    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content || '', id]);
     res.sendStatus(200);
   } catch (err) {
     console.error('Update error:', err);
