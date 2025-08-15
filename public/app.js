@@ -31,7 +31,7 @@ async function fetchNotes() {
     card.innerHTML = `
       <h3 contenteditable="true" class="note-title" onblur="updateNote(${note.id}, this.innerText, '${note.content}')">${note.title}</h3>
       <p contenteditable="true" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>
-      ${note.image ? `<img src="data:image/png;base64,${note.image}" alt="note image" class="note-img">` : ''}
+      ${note.image ? `<img src="data:${note.image_type};base64,${note.image}" alt="note image" class="note-img" onclick="viewImage(this.src)">` : ''}
       ${note.file && note.filename && note.filetype ? `
         <a href="data:${note.filetype};base64,${note.file}" download="${note.filename}" class="download-link">
           Download File
@@ -86,65 +86,28 @@ function deleteNote(id) {
     .catch((err) => console.error('Delete error:', err));
 }
 
-document.getElementById('executeSql').addEventListener('click', async () => {
-  const query = document.getElementById('sqlQuery').value;
-  try {
-    const res = await fetch('/execute-sql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    });
-    const result = await res.json();
-    const resultsDiv = document.getElementById('sqlResults');
-    if (result.error) {
-      resultsDiv.innerHTML = `<p style="color: red;">${result.error}: ${result.details || ''}</p>`;
-    } else {
-      resultsDiv.innerHTML = '<h3>Query Results</h3>';
-      if (result.data.length === 0) {
-        resultsDiv.innerHTML += '<p>No results found.</p>';
-      } else {
-        const table = document.createElement('table');
-        table.style.borderCollapse = 'collapse';
-        table.style.width = '100%';
-        table.style.marginTop = '10px';
-        table.style.border = '1px solid #9D4EDD';
+function viewImage(src) {
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.style.zIndex = '1000';
 
-        // Table headers
-        const headers = Object.keys(result.data[0]);
-        const headerRow = document.createElement('tr');
-        headers.forEach(header => {
-          const th = document.createElement('th');
-          th.textContent = header;
-          th.style.border = '1px solid #9D4EDD';
-          th.style.padding = '8px';
-          th.style.background = '#292929';
-          th.style.color = '#fff';
-          headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.maxWidth = '90%';
+  img.style.maxHeight = '90%';
 
-        // Table rows
-        result.data.forEach(row => {
-          const tr = document.createElement('tr');
-          headers.forEach(header => {
-            const td = document.createElement('td');
-            td.textContent = row[header] || '';
-            td.style.border = '1px solid #9D4EDD';
-            td.style.padding = '8px';
-            td.style.color = '#ccc';
-            tr.appendChild(td);
-          });
-          table.appendChild(tr);
-        });
-
-        resultsDiv.appendChild(table);
-      }
-    }
-  } catch (err) {
-    console.error('SQL execution error:', err);
-    document.getElementById('sqlResults').innerHTML = `<p style="color: red;">Error executing query</p>`;
-  }
-});
+  modal.appendChild(img);
+  modal.onclick = () => modal.remove();
+  document.body.appendChild(modal);
+}
 
 fetchNotes();
 
@@ -153,24 +116,19 @@ window.addEventListener("DOMContentLoaded", () => {
   overlay.id = "auth-overlay";
   overlay.innerHTML = `
     <div class="auth-box">
-      <h2>Enter Password</h2>
-      <input type="password" id="auth-input" maxlength="4" />
-      <button id="auth-submit">Unlock</button>
-      <p id="auth-error" style="color:red; display:none;">Wrong password</p>
+      <h2>Enter Username</h2>
+      <input type="text" id="username-input" placeholder="Enter Username" />
+      <button id="auth-submit">Login</button>
+      <p id="auth-error" style="color:red; display:none;">Please enter a username</p>
     </div>
   `;
   document.body.appendChild(overlay);
 
   document.body.style.overflow = "hidden";
 
-  const submitPassword = () => {
-    const userInput = document.getElementById("auth-input").value;
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const password = `${hours}${minutes.toString().padStart(2, '0')}`;
-
-    if (userInput === password) {
+  const submitUsername = () => {
+    const userInput = document.getElementById("username-input").value.trim();
+    if (userInput !== '') {
       overlay.remove();
       document.body.style.overflow = "auto";
     } else {
@@ -178,10 +136,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  document.getElementById("auth-submit").onclick = submitPassword;
+  document.getElementById("auth-submit").onclick = submitUsername;
 
-  document.getElementById("auth-input").addEventListener("keyup", (e) => {
-    if (e.key === "Enter") submitPassword();
+  document.getElementById("username-input").addEventListener("keyup", (e) => {
+    if (e.key === "Enter") submitUsername();
   });
 });
 
