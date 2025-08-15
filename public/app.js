@@ -1,20 +1,87 @@
-document.getElementById('noteForm').addEventListener('submit', async (e) => {
+const noteForm = document.getElementById('noteForm');
+const waitingArea = document.getElementById('waiting-area');
+const loadingSpinner = document.getElementById('loading-spinner');
+let pendingFiles = { images: [], files: [] };
+
+noteForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
   const formData = new FormData(form);
 
+  // Append pending files
+  pendingFiles.images.forEach((file, index) => {
+    formData.append(`images`, file);
+  });
+  pendingFiles.files.forEach((file, index) => {
+    formData.append(`files`, file);
+  });
+
+  loadingSpinner.classList.remove('hidden');
+  form.querySelector('.submit-btn').disabled = true;
+
   try {
-    await fetch('/add-note', {
+    const response = await fetch('/add-note', {
       method: 'POST',
       body: formData,
     });
+
+    if (!response.ok) throw new Error('Failed to save note');
+    
+    // Clear form and waiting area
     form.reset();
-    fetchNotes();
+    waitingArea.innerHTML = '';
+    pendingFiles = { images: [], files: [] };
+    await fetchNotes();
   } catch (err) {
     console.error('Error saving note:', err);
     alert('Failed to save note. Please try again.');
+  } finally {
+    loadingSpinner.classList.add('hidden');
+    form.querySelector('.submit-btn').disabled = false;
   }
 });
+
+// Handle file input changes
+document.querySelector('input[name="images"]').addEventListener('change', (e) => {
+  handleFileInput(e, 'images');
+});
+
+document.querySelector('input[name="files"]').addEventListener('change', (e) => {
+  handleFileInput(e, 'files');
+});
+
+function handleFileInput(event, type) {
+  const files = Array.from(event.target.files);
+  files.forEach(file => {
+    pendingFiles[type].push(file);
+    displayPendingFile(file, type);
+  });
+  event.target.value = ''; // Clear input to allow re-adding same file
+}
+
+function displayPendingFile(file, type) {
+  const fileDiv = document.createElement('div');
+  fileDiv.className = 'pending-file';
+  fileDiv.dataset.type = type;
+  fileDiv.dataset.name = file.name;
+
+  const preview = type === 'images' ? `<img src="${URL.createObjectURL(file)}" alt="${file.name}" />` : `<span>${file.name}</span>`;
+  fileDiv.innerHTML = `
+    ${preview}
+    <button class="remove-file-btn" onclick="removePendingFile('${file.name}', '${type}')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#dc2626" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  `;
+  waitingArea.appendChild(fileDiv);
+}
+
+function removePendingFile(name, type) {
+  pendingFiles[type] = pendingFiles[type].filter(file => file.name !== name);
+  const fileDiv = waitingArea.querySelector(`.pending-file[data-name="${name}"][data-type="${type}"]`);
+  if (fileDiv) fileDiv.remove();
+}
 
 async function fetchNotes() {
   try {
@@ -45,23 +112,23 @@ async function fetchNotes() {
             ` : `
               <button class="action-btn delete-btn" title="Delete" onclick="deleteNote(${note.id})">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#dc2626" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1z"/>
+                  <path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 0 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1z"/>
                 </svg>
               </button>
             `}
           </div>
         </div>
         ${note.content ? `<p contenteditable="true" class="note-content" onblur="updateNote(${note.id}, '${note.title}', this.innerText)">${note.content}</p>` : ''}
-        ${note.image ? `<img src="data:${note.image_type};base64,${note.image}" alt="Note image" class="note-img" onclick="viewImage(this.src)">` : ''}
-        ${note.file && note.filename && note.filetype ? `
-          <a href="data:${note.filetype};base64,${note.file}" download="${note.filename}" class="download-link">
+        ${note.images && note.images.length > 0 ? note.images.map((img, index) => `<img src="data:${note.image_types[index]};base64,${img}" alt="Note image" class="note-img" onclick="viewImage(this.src)">`).join('') : ''}
+        ${note.files && note.files.length > 0 ? note.files.map((file, index) => `
+          <a href="data:${note.filetypes[index]};base64,${file}" download="${note.filenames[index]}" class="download-link">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="#eab308" xmlns="http://www.w3.org/2000/svg">
               <path d="M8 1a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 8.293V1.5A.5.5 0 0 1 8 1z"/>
               <path d="M3 12.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 1 1 0v1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-1a.5.5 0 0 1 1 0z"/>
             </svg>
-            Download ${note.filename}
+            Download ${note.filenames[index]}
           </a>
-        ` : ''}
+        `).join('') : ''}
         <p class="timestamp">${date}</p>
       `;
 
