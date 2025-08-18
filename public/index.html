@@ -9,6 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="password-modal" class="password-modal">
+    <div class="modal-content">
+      <h2>Enter Password</h2>
+      <input type="password" id="password-input" placeholder="Password" required />
+      <button id="password-submit" class="submit-btn">Submit</button>
+      <p id="password-error" class="error hidden">Incorrect password. Try again.</p>
+    </div>
+  </div>
   <nav class="navbar">
     <div class="navbar-content">
       <div class="logo">
