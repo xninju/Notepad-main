@@ -33,6 +33,7 @@ function enableInteractions() {
     element.style.pointerEvents = 'auto';
   });
   passwordModal.style.display = 'none';
+  fetchNotes(); // Fetch notes immediately after authentication
 }
 
 // Show password modal on page load
@@ -68,6 +69,7 @@ passwordInput.addEventListener('keydown', (e) => {
 setInterval(() => {
   if (isAuthenticated && !validatePassword(getCurrentPassword())) {
     isAuthenticated = false;
+    document.getElementById('notes').innerHTML = ''; // Clear notes display
     disableInteractions();
     passwordModal.style.display = 'flex';
     passwordError.classList.add('hidden');
@@ -104,7 +106,7 @@ noteForm.addEventListener('submit', async (e) => {
     form.reset();
     waitingArea.innerHTML = '';
     pendingFiles = { images: [], files: [] };
-    await fetchNotes();
+    await fetchNotes(); // Ensure notes are fetched after adding
   } catch (err) {
     console.error('Error saving note:', err);
     alert('Failed to save note. Please try again.');
@@ -157,7 +159,10 @@ function removePendingFile(name, type) {
 }
 
 async function fetchNotes() {
-  if (!isAuthenticated) return;
+  if (!isAuthenticated) {
+    document.getElementById('notes').innerHTML = ''; // Clear notes if not authenticated
+    return;
+  }
   try {
     const res = await fetch('/get-notes');
     const notes = await res.json();
@@ -291,6 +296,3 @@ document.addEventListener('keydown', (e) => {
     alert('Save is disabled on this page.');
   }
 });
-
-// Initial fetch only if authenticated
-if (isAuthenticated) fetchNotes();
