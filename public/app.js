@@ -21,7 +21,7 @@ function validatePassword(input) {
 }
 
 function disableInteractions() {
-  document.querySelectorAll('input, textarea, button, .note-title, .note-content').forEach(element => {
+  document.querySelectorAll('input:not(#password-input), textarea, button:not(#password-submit), .note-title, .note-content').forEach(element => {
     element.disabled = true;
     element.style.pointerEvents = 'none';
   });
