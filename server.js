@@ -1,12 +1,13 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { Pool } = require('pg');
+const fs = require('fs').promises;
 const app = express();
 const port = process.env.PORT || 3000;
+const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_bM8CYSioIA9J@ep-dry-base-adb3jm03-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
@@ -14,34 +15,99 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-app.post('/add-note', upload.fields([{ name: 'image' }, { name: 'file' }]), async (req, res) => {
-  const { title, content, color, pinned = false } = req.body;
-  const image = req.files?.image?.[0]?.buffer.toString('base64') || null;
-
-  const fileData = req.files?.file?.[0];
-  const file = fileData ? fileData.buffer.toString('base64') : null;
-  const filename = fileData ? fileData.originalname : null;
-  const filetype = fileData ? fileData.mimetype : null;
-
-  try {
-    await pool.query(
-      'INSERT INTO notes (title, content, image, file, filename, filetype, color, pinned, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
-      [title, content, image, file, filename, filetype, color, pinned]
-    );
-    res.status(200).send('Note saved');
-  } catch (err) {
-    console.error('Insert error:', err);
-    res.status(500).send('Error saving note');
+// Configure multer with disk storage and file limits
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Temporary directory for uploads
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB per file
+    files: 5 // Max 5 files per field
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedFileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (file.fieldname === 'images' && allowedImageTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else if (file.fieldname === 'files' && allowedFileTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
+  }
+}).fields([
+  { name: 'images', maxCount: 5 },
+  { name: 'files', maxCount: 5 }
+]);
+
+// Ensure uploads directory exists
+fs.mkdir('uploads', { recursive: true }).catch(console.error);
+
+app.post('/add-note', async (req, res) => {
+  try {
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).send(`Upload error: ${err.message}`);
+      } else if (err) {
+        return res.status(400).send(`Error: ${err.message}`);
+      }
+
+      let { title, content, color } = req.body;
+      content = content || '';
+      const images = [];
+      const image_types = [];
+      const files = [];
+      const filenames = [];
+      const filetypes = [];
+
+      // Process images
+      if (req.files?.images) {
+        for (const file of req.files.images) {
+          const fileContent = await fs.readFile(file.path);
+          images.push(fileContent.toString('base64'));
+          image_types.push(file.mimetype);
+          await fs.unlink(file.path); // Clean up temporary file
+        }
+      }
+
+      // Process files
+      if (req.files?.files) {
+        for (const file of req.files.files) {
+          const fileContent = await fs.readFile(file.path);
+          files.push(fileContent.toString('base64'));
+          filenames.push(file.originalname);
+          filetypes.push(file.mimetype);
+          await fs.unlink(file.path); // Clean up temporary file
+        }
+      }
+
+      try {
+        await pool.query(
+          'INSERT INTO notes (title, content, images, image_types, files, filenames, filetypes, color, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+          [title, content, images, image_types, files, filenames, filetypes, color]
+        );
+        res.status(200).send('Note saved');
+      } catch (dbErr) {
+        console.error('Insert error:', dbErr);
+        res.status(500).send('Error saving note');
+      }
+    });
+  } catch (err) {
+    console.error('Server error:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 app.get('/get-notes', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM notes WHERE deleted = false ORDER BY pinned DESC, id DESC');
+    const result = await pool.query('SELECT * FROM notes WHERE deleted = false ORDER BY id DESC');
     res.json(result.rows);
   } catch (err) {
     console.error('Fetch error:', err);
@@ -53,8 +119,10 @@ app.put('/update-note/:id', async (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
   try {
-    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content, id]);
-    res.sendStatus(200);
+    await pool.query('UPDATE notes SET title = $1, content = $2 WHERE id = $3', [title, content || '', id]);
+    res.send File: style.css
+
+Status: 200);
   } catch (err) {
     console.error('Update error:', err);
     res.status(500).send('Error updating note');
@@ -64,10 +132,7 @@ app.put('/update-note/:id', async (req, res) => {
 app.put('/restore-note/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await pool.query(
-      'UPDATE notes SET deleted = false, deleted_at = NULL WHERE id = $1',
-      [id]
-    );
+    await pool.query('UPDATE notes SET deleted = false, deleted_at = NULL WHERE id = $1', [id]);
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error restoring note:', error);
@@ -97,17 +162,6 @@ app.delete('/delete-note/:id', async (req, res) => {
   }
 });
 
-app.patch('/pin/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query('UPDATE notes SET pinned = NOT pinned WHERE id = $1 RETURNING *', [id]);
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('Pin toggle error:', err);
-    res.status(500).send('Error toggling pin');
-  }
-});
-
 app.listen(port, () => {
-  console.log(`ZapNote server running on port ${port}`);
+  console.log(`PrivyNotes server running on port ${port}`);
 });
