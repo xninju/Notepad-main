@@ -1,10 +1,83 @@
 const noteForm = document.getElementById('noteForm');
 const waitingArea = document.getElementById('waiting-area');
 const loadingSpinner = document.getElementById('loading-spinner');
+const passwordModal = document.getElementById('password-modal');
+const passwordInput = document.getElementById('password-input');
+const passwordSubmit = document.getElementById('password-submit');
+const passwordError = document.getElementById('password-error');
 let pendingFiles = { images: [], files: [] };
+let isAuthenticated = false;
+
+// Password validation
+function getCurrentPassword() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}${minutes}`;
+}
+
+function validatePassword(input) {
+  return input === getCurrentPassword();
+}
+
+function disableInteractions() {
+  document.querySelectorAll('input, textarea, button, .note-title, .note-content').forEach(element => {
+    element.disabled = true;
+    element.style.pointerEvents = 'none';
+  });
+}
+
+function enableInteractions() {
+  document.querySelectorAll('input, textarea, button, .note-title, .note-content').forEach(element => {
+    element.disabled = false;
+    element.style.pointerEvents = 'auto';
+  });
+  passwordModal.style.display = 'none';
+}
+
+// Show password modal on page load
+window.addEventListener('load', () => {
+  disableInteractions();
+  passwordModal.style.display = 'flex';
+  passwordInput.focus();
+});
+
+// Handle password submission
+passwordSubmit.addEventListener('click', () => {
+  const input = passwordInput.value.trim();
+  if (validatePassword(input)) {
+    isAuthenticated = true;
+    enableInteractions();
+    passwordError.classList.add('hidden');
+    passwordInput.value = '';
+  } else {
+    passwordError.classList.remove('hidden');
+    passwordInput.value = '';
+    passwordInput.focus();
+  }
+});
+
+// Handle Enter key for password submission
+passwordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    passwordSubmit.click();
+  }
+});
+
+// Password expiration check every 10 seconds
+setInterval(() => {
+  if (isAuthenticated && !validatePassword(getCurrentPassword())) {
+    isAuthenticated = false;
+    disableInteractions();
+    passwordModal.style.display = 'flex';
+    passwordError.classList.add('hidden');
+    passwordInput.focus();
+  }
+}, 10000);
 
 noteForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (!isAuthenticated) return;
   const form = e.target;
   const formData = new FormData(form);
 
@@ -43,11 +116,11 @@ noteForm.addEventListener('submit', async (e) => {
 
 // Handle file input changes
 document.querySelector('input[name="images"]').addEventListener('change', (e) => {
-  handleFileInput(e, 'images');
+  if (isAuthenticated) handleFileInput(e, 'images');
 });
 
 document.querySelector('input[name="files"]').addEventListener('change', (e) => {
-  handleFileInput(e, 'files');
+  if (isAuthenticated) handleFileInput(e, 'files');
 });
 
 function handleFileInput(event, type) {
@@ -84,6 +157,7 @@ function removePendingFile(name, type) {
 }
 
 async function fetchNotes() {
+  if (!isAuthenticated) return;
   try {
     const res = await fetch('/get-notes');
     const notes = await res.json();
@@ -122,7 +196,7 @@ async function fetchNotes() {
         ${note.images && note.images.length > 0 ? note.images.map((img, index) => `<img src="data:${note.image_types[index]};base64,${img}" alt="Note image" class="note-img" onclick="viewImage(this.src)">`).join('') : ''}
         ${note.files && note.files.length > 0 ? note.files.map((file, index) => `
           <a href="data:${note.filetypes[index]};base64,${file}" download="${note.filenames[index]}" class="download-link">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="#eab308" xmlns="http://www.w3.org/2000/svg">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="#9333ea" xmlns="http://www.w3.org/2000/svg">
               <path d="M8 1a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 8.293V1.5A.5.5 0 0 1 8 1z"/>
               <path d="M3 12.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 1 1 0v1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-1a.5.5 0 0 1 1 0z"/>
             </svg>
@@ -141,6 +215,7 @@ async function fetchNotes() {
 }
 
 function updateNote(id, newTitle, newContent) {
+  if (!isAuthenticated) return;
   fetch(`/update-note/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -151,18 +226,21 @@ function updateNote(id, newTitle, newContent) {
 }
 
 function deleteNote(id) {
+  if (!isAuthenticated) return;
   fetch(`/delete-note/${id}`, { method: 'DELETE' })
     .then(() => fetchNotes())
     .catch((err) => console.error('Delete error:', err));
 }
 
 function restoreNote(id) {
+  if (!isAuthenticated) return;
   fetch(`/restore-note/${id}`, { method: 'PUT' })
     .then(() => fetchNotes())
     .catch((err) => console.error('Restore error:', err));
 }
 
 function permanentlyDeleteNote(id) {
+  if (!isAuthenticated) return;
   if (confirm('Are you sure you want to permanently delete this note?')) {
     fetch(`/permanently-delete/${id}`, { method: 'DELETE' })
       .then(() => fetchNotes())
@@ -171,6 +249,7 @@ function permanentlyDeleteNote(id) {
 }
 
 function viewImage(src) {
+  if (!isAuthenticated) return;
   const modal = document.createElement('div');
   modal.className = 'image-modal';
   modal.innerHTML = `
@@ -188,27 +267,30 @@ function viewImage(src) {
 
 // Disable right-click
 document.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
+  if (!isAuthenticated) e.preventDefault();
 });
 
 // Block common devtools shortcuts
 document.addEventListener('keydown', (e) => {
-  if (
-    e.key === 'F12' ||
-    (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
-    (e.ctrlKey && e.key === 'U')
-  ) {
-    e.preventDefault();
-    alert('This action is disabled.');
+  if (!isAuthenticated) {
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
+      (e.ctrlKey && e.key === 'U')
+    ) {
+      e.preventDefault();
+      alert('This action is disabled.');
+    }
   }
 });
 
 // Disable Ctrl+S or Cmd+S
 document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+  if (!isAuthenticated && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
     e.preventDefault();
     alert('Save is disabled on this page.');
   }
 });
 
-fetchNotes();
+// Initial fetch only if authenticated
+if (isAuthenticated) fetchNotes();
