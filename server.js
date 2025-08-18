@@ -161,5 +161,5 @@ app.delete('/delete-note/:id', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`PrivyNotes server running on port ${port}`);
+  console.log(`NotaForge server running on port ${port}`);
 });
