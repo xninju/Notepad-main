@@ -122,7 +122,7 @@ async function fetchNotes() {
         ${note.images && note.images.length > 0 ? note.images.map((img, index) => `<img src="data:${note.image_types[index]};base64,${img}" alt="Note image" class="note-img" onclick="viewImage(this.src)">`).join('') : ''}
         ${note.files && note.files.length > 0 ? note.files.map((file, index) => `
           <a href="data:${note.filetypes[index]};base64,${file}" download="${note.filenames[index]}" class="download-link">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="#8b5cf6" xmlns="http://www.w3.org/2000/svg">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="#eab308" xmlns="http://www.w3.org/2000/svg">
               <path d="M8 1a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 8.293V1.5A.5.5 0 0 1 8 1z"/>
               <path d="M3 12.5v1a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 1 1 0v1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-1a.5.5 0 0 1 1 0z"/>
             </svg>
