@@ -303,6 +303,7 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   min-height: 150px;
+  width: 320px;
 }
 
 .note-card:hover {
